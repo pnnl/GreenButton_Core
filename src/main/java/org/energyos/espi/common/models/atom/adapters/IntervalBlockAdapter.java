@@ -18,6 +18,7 @@ package org.energyos.espi.common.models.atom.adapters;
 
 import org.energyos.espi.common.domain.IntervalBlock;
 import org.energyos.espi.common.domain.IntervalReading;
+import org.energyos.espi.common.domain.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -37,6 +38,9 @@ public class IntervalBlockAdapter extends XmlAdapter<JAXBElement<IntervalBlock>,
 
     @Override
     public JAXBElement<IntervalBlock> marshal(IntervalBlock v) throws Exception {
-        return null;
+        if(v == null) {
+            return null;
+        }
+        return new JAXBElement<>(ObjectFactory.IntervalBlock_QNAME, IntervalBlock.class, v);
     }
 }
