@@ -117,34 +117,34 @@ public class ElectricPowerUsageSummaryMarshallingTests {
 	public void unmarshal_setsBillLastPeriod() {
 		assertEquals(1L, electricPowerUsageSummary.getBillLastPeriod()
 				.longValue());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsBillToDate() {
 		assertEquals(2L, electricPowerUsageSummary.getBillToDate().longValue());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsCostAdditionalLastPeriod() {
 		assertEquals(3L, electricPowerUsageSummary
 				.getCostAdditionalLastPeriod().longValue());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsCurrency() {
 		assertEquals("currency", electricPowerUsageSummary.getCurrency());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsQualityOfReading() {
 		assertEquals("qualityOfReading",
 				electricPowerUsageSummary.getQualityOfReading());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsStatusTimeStamp() {
 		assertEquals(4L, electricPowerUsageSummary.getStatusTimeStamp());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsRatchetDemandPeriod() {
@@ -152,7 +152,7 @@ public class ElectricPowerUsageSummaryMarshallingTests {
 				.getRatchetDemandPeriod().getDuration().longValue());
 		assertEquals(1119601L, electricPowerUsageSummary
 				.getRatchetDemandPeriod().getStart().longValue());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsBillingPeriod() {
@@ -160,59 +160,59 @@ public class ElectricPowerUsageSummaryMarshallingTests {
 				.getDuration().longValue());
 		assertEquals(1119603L, electricPowerUsageSummary.getBillingPeriod()
 				.getStart().longValue());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsCurrentBillingPeriodOverAllConsumption() {
 		assertSummaryMeasurement(electricPowerUsageSummary
 				.getCurrentBillingPeriodOverAllConsumption());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsCurrentDayLastYearNetConsumption() {
 		assertSummaryMeasurement(electricPowerUsageSummary
 				.getCurrentDayLastYearNetConsumption());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsCurrentDayNetConsumption() {
 		assertSummaryMeasurement(electricPowerUsageSummary
 				.getCurrentDayNetConsumption());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsCurrentDayOverallConsumption() {
 		assertSummaryMeasurement(electricPowerUsageSummary
 				.getCurrentDayOverallConsumption());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsPeakDemand() {
 		assertSummaryMeasurement(electricPowerUsageSummary.getPeakDemand());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsPreviousDayLastYearOverallConsumption() {
 		assertSummaryMeasurement(electricPowerUsageSummary
 				.getPreviousDayLastYearOverallConsumption());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsPreviousDayNetConsumption() {
 		assertSummaryMeasurement(electricPowerUsageSummary
 				.getPreviousDayNetConsumption());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsPreviousDayOverallConsumption() {
 		assertSummaryMeasurement(electricPowerUsageSummary
 				.getPreviousDayOverallConsumption());
-	};
+	}
 
 	@Test
 	public void unmarshal_setsRatchetDemand() {
 		assertSummaryMeasurement(electricPowerUsageSummary.getRatchetDemand());
-	};
+	}
 
 	private void assertSummaryMeasurement(SummaryMeasurement sm) {
 		assertEquals("PowerOfTenMultiplier", sm.getPowerOfTenMultiplier());

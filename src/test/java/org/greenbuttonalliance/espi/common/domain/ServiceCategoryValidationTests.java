@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 
 public class ServiceCategoryValidationTests extends XMLTest {
 	@Test
-	public void isValid() throws Exception {
+	public void isValid() {
 		Validator validator = Validation.buildDefaultValidatorFactory()
 				.getValidator();
 
@@ -46,7 +46,7 @@ public class ServiceCategoryValidationTests extends XMLTest {
 	}
 
 	@Test
-	public void isInvalid() throws Exception {
+	public void isInvalid() {
 		Validator validator = Validation.buildDefaultValidatorFactory()
 				.getValidator();
 
