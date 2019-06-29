@@ -34,91 +34,89 @@ import java.util.UUID;
 
 @Repository
 @Transactional(rollbackFor = { javax.xml.bind.JAXBException.class }, noRollbackFor = {
-		javax.persistence.NoResultException.class,
-		org.springframework.dao.EmptyResultDataAccessException.class })
+        javax.persistence.NoResultException.class,
+        org.springframework.dao.EmptyResultDataAccessException.class })
 public class ElectricPowerUsageSummaryRepositoryImpl implements
-		ElectricPowerUsageSummaryRepository {
+        ElectricPowerUsageSummaryRepository {
 
-	@PersistenceContext
-	protected EntityManager em;
+    @PersistenceContext
+    protected EntityManager em;
 
-	@Override
-	public ElectricPowerUsageSummary findById(Long electricPowerUsageSummaryId) {
-		return em.find(ElectricPowerUsageSummary.class,
-				electricPowerUsageSummaryId);
-	}
+    @Override
+    public ElectricPowerUsageSummary findById(Long electricPowerUsageSummaryId) {
+        return em.find(ElectricPowerUsageSummary.class,
+                electricPowerUsageSummaryId);
+    }
 
-	@Override
-	@Transactional(rollbackFor = { javax.xml.bind.JAXBException.class }, noRollbackFor = {
-			javax.persistence.NoResultException.class,
-			org.springframework.dao.EmptyResultDataAccessException.class })
-	public void persist(ElectricPowerUsageSummary electricPowerUsageSummary) {
-		em.persist(electricPowerUsageSummary);
-	}
+    @Override
+    @Transactional(rollbackFor = { javax.xml.bind.JAXBException.class }, noRollbackFor = {
+            javax.persistence.NoResultException.class,
+            org.springframework.dao.EmptyResultDataAccessException.class })
+    public void persist(ElectricPowerUsageSummary electricPowerUsageSummary) {
+        em.persist(electricPowerUsageSummary);
+    }
 
-	@Override
-	public ElectricPowerUsageSummary findByUUID(UUID uuid) {
-		return (ElectricPowerUsageSummary) em
-				.createNamedQuery(ElectricPowerUsageSummary.QUERY_FIND_BY_UUID)
-				.setParameter("uuid", uuid.toString().toUpperCase())
-				.getSingleResult();
-	}
+    @Override
+    public ElectricPowerUsageSummary findByUUID(UUID uuid) {
+        return (ElectricPowerUsageSummary) em
+                .createNamedQuery(ElectricPowerUsageSummary.QUERY_FIND_BY_UUID)
+                .setParameter("uuid", uuid.toString().toUpperCase())
+                .getSingleResult();
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Long> findAllIds() {
-		List<Long> temp;
-		temp = (List<Long>) this.em.createNamedQuery(
-				ElectricPowerUsageSummary.QUERY_FIND_ALL_IDS).getResultList();
-		return temp;
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Long> findAllIds() {
+        List<Long> temp;
+        temp = (List<Long>) this.em.createNamedQuery(
+                ElectricPowerUsageSummary.QUERY_FIND_ALL_IDS).getResultList();
+        return temp;
+    }
 
-	@Override
-	@Transactional(rollbackFor = { javax.xml.bind.JAXBException.class }, noRollbackFor = {
-			javax.persistence.NoResultException.class,
-			org.springframework.dao.EmptyResultDataAccessException.class })
-	public void deleteById(Long id) {
-		ElectricPowerUsageSummary us = findById(id);
-		UsagePoint up = us.getUsagePoint();
-		up.removeElectricPowerUsageSummary(us);
-		em.persist(em.contains(up) ? us : em.merge(up));
-		em.remove(em.contains(us) ? us : em.merge(us));
-	}
+    @Override
+    @Transactional(rollbackFor = { javax.xml.bind.JAXBException.class }, noRollbackFor = {
+            javax.persistence.NoResultException.class,
+            org.springframework.dao.EmptyResultDataAccessException.class })
+    public void deleteById(Long id) {
+        ElectricPowerUsageSummary us = findById(id);
+        UsagePoint up = us.getUsagePoint();
+        up.removeElectricPowerUsageSummary(us);
+        em.persist(em.contains(up) ? us : em.merge(up));
+        em.remove(em.contains(us) ? us : em.merge(us));
+    }
 
-	@Override
-	public void createOrReplaceByUUID(
-			ElectricPowerUsageSummary electricPowerUsageSummary) {
+    @Override
+    public void createOrReplaceByUUID(
+            ElectricPowerUsageSummary electricPowerUsageSummary) {
 
-		try {
-			ElectricPowerUsageSummary existingElectricPowerUsageSummary = findByUUID(electricPowerUsageSummary
-					.getUUID());
-			electricPowerUsageSummary.setId(existingElectricPowerUsageSummary
-					.getId());
-			if (electricPowerUsageSummary.getUsagePoint() == null) {
-				electricPowerUsageSummary
-						.setUsagePoint(existingElectricPowerUsageSummary
-								.getUsagePoint());
-			}
+        try {
+            ElectricPowerUsageSummary existingElectricPowerUsageSummary = findByUUID(electricPowerUsageSummary
+                    .getUUID());
+            electricPowerUsageSummary.setId(existingElectricPowerUsageSummary
+                    .getId());
+            if (electricPowerUsageSummary.getUsagePoint() == null) {
+                electricPowerUsageSummary
+                        .setUsagePoint(existingElectricPowerUsageSummary
+                                .getUsagePoint());
+            }
 
-			if (existingElectricPowerUsageSummary.getSelfLink() != null) {
-				electricPowerUsageSummary
-						.setSelfLink(existingElectricPowerUsageSummary
-								.getSelfLink());
-			}
+            if (existingElectricPowerUsageSummary.getSelfLink() != null) {
+                electricPowerUsageSummary
+                        .setSelfLink(existingElectricPowerUsageSummary
+                                .getSelfLink());
+            }
 
-			if (existingElectricPowerUsageSummary.getUpLink() != null) {
-				electricPowerUsageSummary
-						.setUpLink(existingElectricPowerUsageSummary
-								.getUpLink());
-			}
+            if (existingElectricPowerUsageSummary.getUpLink() != null) {
+                electricPowerUsageSummary
+                        .setUpLink(existingElectricPowerUsageSummary
+                                .getUpLink());
+            }
 
-			em.merge(electricPowerUsageSummary);
-		} catch (NoResultException e) {
-			electricPowerUsageSummary.setPublished(new GregorianCalendar());
-			electricPowerUsageSummary.setUpdated(new GregorianCalendar());
-			persist(electricPowerUsageSummary);
-		}
-
-	}
-
+            em.merge(electricPowerUsageSummary);
+        } catch (NoResultException e) {
+            electricPowerUsageSummary.setPublished(new GregorianCalendar());
+            electricPowerUsageSummary.setUpdated(new GregorianCalendar());
+            persist(electricPowerUsageSummary);
+        }
+    }
 }

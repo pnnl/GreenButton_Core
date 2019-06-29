@@ -55,5 +55,4 @@ public interface ElectricPowerUsageSummaryService {
 	void delete(ElectricPowerUsageSummary electricPowerUsageSummary);
 
 	ElectricPowerUsageSummary importResource(InputStream stream);
-
 }
