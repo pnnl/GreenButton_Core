@@ -25,22 +25,21 @@ import org.greenbuttonalliance.espi.common.domain.ObjectFactory;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-public class ElectricPowerUsageSummaryAdapter
-		extends
-		XmlAdapter<JAXBElement<ElectricPowerUsageSummary>, ElectricPowerUsageSummary> {
-	@Override
-	public ElectricPowerUsageSummary unmarshal(
-			JAXBElement<ElectricPowerUsageSummary> v) throws Exception {
-		return v.getValue();
-	}
+public class ElectricPowerUsageSummaryAdapter extends
+        XmlAdapter<JAXBElement<ElectricPowerUsageSummary>, ElectricPowerUsageSummary> {
+    @Override
+    public ElectricPowerUsageSummary unmarshal(
+            JAXBElement<ElectricPowerUsageSummary> v) throws Exception {
+        return v.getValue();
+    }
 
-	@Override
-	public JAXBElement<ElectricPowerUsageSummary> marshal(
-			ElectricPowerUsageSummary v) throws Exception {
-		if (v == null) {
-			return null;
-		}
-		return new JAXBElement<>(ObjectFactory.ElectricPowerUsageSummary_QNAME,
-				ElectricPowerUsageSummary.class, v);
-	}
+    @Override
+    public JAXBElement<ElectricPowerUsageSummary> marshal(
+            ElectricPowerUsageSummary v) throws Exception {
+        if (v == null) {
+            return null;
+        }
+        return new JAXBElement<>(ObjectFactory.ElectricPowerUsageSummary_QNAME,
+                ElectricPowerUsageSummary.class, v);
+    }
 }
