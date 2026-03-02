@@ -18,10 +18,21 @@
  *
  */
 
-drop database IF EXISTS datacustodian  ;
-drop database IF EXISTS tokenstore;
+drop database IF EXISTS datacustodian;
+SELECT 'DEBUG: dropped datacustodian' AS debug_msg;
+
+drop database tokenstore;
+SELECT 'DEBUG: dropped tokenstore' AS debug_msg;
+
 show databases;
+SELECT 'DEBUG: showed databases' AS debug_msg;
+
 create database datacustodian;
+SELECT 'DEBUG: created datacustodian' AS debug_msg;
+
 create database tokenstore;
+SELECT 'DEBUG: created tokenstore' AS debug_msg;
+
 show databases;
+SELECT 'DEBUG: finished show databases' AS debug_msg;
 

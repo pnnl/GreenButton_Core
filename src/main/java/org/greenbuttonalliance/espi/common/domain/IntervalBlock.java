@@ -74,8 +74,8 @@ import java.util.List;
 		@NamedQuery(name = IntervalBlock.QUERY_FIND_BY_UUID, query = "SELECT block FROM IntervalBlock block WHERE block.uuid = :uuid"),
 		@NamedQuery(name = IntervalBlock.QUERY_FIND_ALL_IDS_BY_USAGE_POINT_ID, query = "SELECT block.id FROM IntervalBlock block where block.meterReading.usagePoint.id = :usagePointId"),
 		@NamedQuery(name = IntervalBlock.QUERY_FIND_ALL_IDS, query = "SELECT intervalBlock.id FROM IntervalBlock intervalBlock"),
-		@NamedQuery(name = IntervalBlock.QUERY_FIND_ALL_IDS_BY_XPATH_3, query = "SELECT DISTINCT i.id FROM UsagePoint u, MeterReading m, IntervalBlock i WHERE u.retailCustomer.id = :o1Id AND m.usagePoint.id = :o2Id AND i.meterReading.id = :o3Id"),
-		@NamedQuery(name = IntervalBlock.QUERY_FIND_ID_BY_XPATH, query = "SELECT DISTINCT i.id FROM UsagePoint u, MeterReading m, IntervalBlock i WHERE u.retailCustomer.id = :o1Id AND m.usagePoint.id = :o2Id AND i.meterReading.id = :o3Id AND i.id = :o4Id")
+		@NamedQuery(name = IntervalBlock.QUERY_FIND_ALL_IDS_BY_XPATH_3, query = "SELECT DISTINCT i.id FROM IntervalBlock i JOIN i.meterReading m JOIN m.usagePoint u WHERE u.retailCustomer.id = :o1Id AND u.id = :o2Id AND m.id = :o3Id"),
+		@NamedQuery(name = IntervalBlock.QUERY_FIND_ID_BY_XPATH, query = "SELECT DISTINCT i.id FROM IntervalBlock i JOIN i.meterReading m JOIN m.usagePoint u WHERE u.retailCustomer.id = :o1Id AND u.id = :o2Id AND m.id = :o3Id AND i.id = :o4Id")
 
 })
 @XmlRootElement(name = "IntervalBlock")
@@ -178,6 +178,7 @@ public class IntervalBlock extends IdentifiedObject {
 	@Override
 	public void setUpResource(IdentifiedObject resource) {
 		MeterReading meterReading = (MeterReading) resource;
+		this.meterReading = meterReading;
 		meterReading.addIntervalBlock(this);
 	}
 

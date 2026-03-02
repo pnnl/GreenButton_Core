@@ -1,0 +1,94 @@
+flowchart LR
+  %% End-to-end data sharing flow (consent -> token -> data)
+  %% NOTE: This file is written to be strict Mermaid-parser-friendly.
+
+  %% Styling
+  classDef actor fill:#0b1020,stroke:#334155,color:#e6edf3,stroke-width:1px;
+  classDef fe fill:#111827,stroke:#60a5fa,color:#e6edf3,stroke-width:2px;
+  classDef be fill:#0f172a,stroke:#a78bfa,color:#e6edf3,stroke-width:2px;
+  classDef api fill:#111827,stroke:#22c55e,color:#e6edf3,stroke-width:2px;
+  classDef db fill:#111827,stroke:#f59e0b,color:#e6edf3,stroke-width:2px;
+  classDef highlight fill:#1f6feb,stroke:#0b3d91,color:#ffffff,stroke-width:2px;
+
+  subgraph U["User + Browser"]
+    U1["User"]
+    B1["Browser session<br/>(cookies: JSESSIONID)"]
+  end
+
+  subgraph PS["PetSafe FE"]
+    PS1["Connect My Data (UI action)"]
+    PS2["Fetch connected data:<br/>GET /api/server/retailCustomer/:id/data"]
+  end
+
+  subgraph TP["ThirdParty (TP)"]
+    TP1["Auth API:<br/>POST /ThirdParty/api/auth/initiate"]
+    TP2["Auth API:<br/>POST /ThirdParty/api/auth/authorize"]
+    TP3["OAuth callback:<br/>GET /ThirdParty/espi/1_1/OAuthCallBack"]
+    TP4["Token exchange:<br/>POST DC /oauth/token"]
+    TP5["Server proxy:<br/>GET /ThirdParty/api/server/retailCustomer/:id/data"]
+  end
+
+  subgraph ST["Stars FE (consent UI)"]
+    ST1["Consent page: /confirmation"]
+    ST2["Login: POST /api/auth/login"]
+    ST3["Load scopes: GET /api/auth/scopes"]
+    ST4["Approve consent: POST /api/auth/consent"]
+  end
+
+  subgraph DC["DataCustodian (DC)"]
+    DC1["Authorize helper:<br/>POST /DataCustodian/api/auth/authorize"]
+    DC2["Consent handler:<br/>POST /DataCustodian/api/auth/consent"]
+    DC3["OAuth authorize:<br/>GET/POST /DataCustodian/oauth/authorize"]
+    DC4["OAuth token:<br/>POST /DataCustodian/oauth/token"]
+    DC5["Resource export: GET resourceURI (subscription feed)"]
+  end
+
+  subgraph DB["Databases"]
+    DB1[(tokenstore)]
+    DB2[(datacustodian)]
+    DB3[(thirdparty)]
+  end
+
+  %% Class assignments
+  class U1,B1 actor;
+  class PS1,PS2 fe;
+  class TP1,TP2,TP4 be;
+  class TP5,DC1,DC3,DC4,DC5 api;
+  class DC2,ST4,TP3 highlight;
+  class ST1,ST2,ST3 fe;
+  class DB1,DB2,DB3 db;
+
+  %% Flow: initiate consent
+  U1 --> PS1
+  PS1 --> TP1
+  TP1 --> TP2
+  TP2 --> DC1
+  DC1 --> ST1
+
+  %% Flow: user consents (Stars -> DC)
+  U1 --> ST1
+  ST1 --> ST2 --> DC2
+  ST1 --> ST3 --> DC1
+  ST4 --> DC2
+  DC2 --> DC3
+
+  %% OAuth code redirect (DC -> TP callback)
+  DC3 -->|"302 redirect to TP callback (code)"| TP3
+  DC2 -->|"server-to-server GET callback URL"| TP3
+
+  %% TP exchanges code for token and stores authorization
+  TP3 --> TP4 --> DC4
+  DC4 --> TP3
+  TP3 --> DB3
+
+  %% Later: PetSafe requests data via TP, TP uses token to read from DC
+  U1 --> PS2 --> TP5
+  TP5 --> DB3
+  TP5 -->|"Bearer access_token + resourceURI"| DC5
+  DC5 --> DB2
+  DC5 --> TP5 --> PS2
+
+  %% Note
+  N1["Privacy selected during consent becomes part of Authorization.scope (example: privacy:medium)"]
+  class N1 actor;
+  ST4 -.-> N1

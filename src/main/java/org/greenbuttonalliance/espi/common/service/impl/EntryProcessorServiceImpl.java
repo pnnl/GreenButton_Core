@@ -20,6 +20,8 @@
 
 package org.greenbuttonalliance.espi.common.service.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.greenbuttonalliance.espi.common.domain.*;
 import org.greenbuttonalliance.espi.common.models.atom.EntryType;
 import org.greenbuttonalliance.espi.common.models.atom.LinkType;
@@ -31,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,92 +42,101 @@ import java.util.UUID;
 @Service
 public class EntryProcessorServiceImpl implements EntryProcessorService {
 
+	private final Log logger = LogFactory.getLog(getClass());
+
 	@Autowired
 	private ResourceService resourceService;
 
 	public EntryType process(EntryType entry) {
+		logger.debug("EntryProcessorServiceImpl.process called for entry: " + entry.getId());
 		convert(entry);
 		for (IdentifiedObject resource : entry.getContent().getResources()) {
-
+			IdentifiedObject managedResource;
 			try {
 
 				IdentifiedObject existingResource = resourceService.findByUUID(
 						resource.getUUID(), resource.getClass());
-				existingResource = resourceService.merge(existingResource);
-
-				// merge the new into the old and throw the new away
-				//
+				
+				// Merge the new into the old and throw the new away
 				existingResource.merge(resource);
+				managedResource = resourceService.merge(existingResource);
 
-				// now put the existing resource back into the structure so it
-				// will
-				// be available for later processing
-
-				if (existingResource instanceof UsagePoint) {
-					entry.getContent().setUsagePoint(
-							(UsagePoint) existingResource);
-				}
-
-				if (existingResource instanceof MeterReading) {
-					entry.getContent().setMeterReading(
-							(MeterReading) existingResource);
-				}
-
-				if (existingResource instanceof IntervalBlock) {
-					// System.out.printf("*****We have an existing IntervalBlock??: %s\n",
-					// existingResource.toString());
-					List<IntervalBlock> intervalBlocks = entry.getContent()
-							.getIntervalBlocks();
-					List<IntervalBlock> newList = new ArrayList<IntervalBlock>();
-					Iterator<IntervalBlock> blocks = intervalBlocks.iterator();
-					while (blocks.hasNext()) {
-						IntervalBlock bl = blocks.next();
-						if (bl.getUUID().equals(existingResource.getUUID())) {
-							existingResource.merge(bl);
-							newList.add((IntervalBlock) existingResource);
-						} else {
-							newList.add(bl);
+			} catch (EmptyResultDataAccessException | javax.persistence.NoResultException x) {
+				// Check if the resource is a UsagePoint and ensure no duplicate UUIDs
+				if (resource instanceof UsagePoint) {
+					UsagePoint usagePoint = (UsagePoint) resource;
+					// findByUUID will throw if not present; treat null result as non-existent
+					try {
+						UsagePoint existing = resourceService.findByUUID(usagePoint.getUUID(), UsagePoint.class);
+						if (existing != null) {
+							System.out.println("[DEBUG] Duplicate UsagePoint detected: " + usagePoint.getUUID());
+							continue; // Skip processing this duplicate UsagePoint
 						}
+					} catch (Exception ignore) {
+						// Not found, proceed to merge as new
 					}
 				}
 
-				if (existingResource instanceof ReadingType) {
-
-					entry.getContent().setReadingType(
-							(ReadingType) existingResource);
+				// For new entities, clear collections to avoid cascade issues during initial merge
+				if (resource instanceof UsagePoint) {
+					UsagePoint up = (UsagePoint) resource;
+					up.getMeterReadings().clear();
+					up.getElectricPowerUsageSummaries().clear();
+					up.getUsageSummaries().clear();
+					up.getElectricPowerQualitySummaries().clear();
 				}
-
-				if (existingResource instanceof TimeConfiguration) {
-
-					entry.getContent().setLocalTimeParameters(
-							(TimeConfiguration) existingResource);
+				if (resource instanceof MeterReading) {
+					MeterReading mr = (MeterReading) resource;
+					mr.getIntervalBlocks().clear();
 				}
-
-				if (existingResource instanceof ElectricPowerUsageSummary) {
-
-					entry.getContent().setElectricPowerUsageSummary(
-							(ElectricPowerUsageSummary) existingResource);
+				// Clear any collections that might have cascade issues
+				if (resource instanceof UsagePoint) {
+					UsagePoint up = (UsagePoint) resource;
+					up.getMeterReadings().clear();
+					up.getElectricPowerUsageSummaries().clear();
+					up.getUsageSummaries().clear();
+					up.getElectricPowerQualitySummaries().clear();
 				}
-
-				if (existingResource instanceof ElectricPowerQualitySummary) {
-
-					entry.getContent().setElectricPowerQualitySummary(
-							(ElectricPowerQualitySummary) existingResource);
+				if (resource instanceof MeterReading) {
+					MeterReading mr = (MeterReading) resource;
+					mr.getIntervalBlocks().clear();
 				}
-
-				if (existingResource instanceof ApplicationInformation) {
-
-					entry.getContent().setApplicationInformation(
-							(ApplicationInformation) existingResource);
-				}
-
-				link(existingResource);
-
-			} catch (EmptyResultDataAccessException x) {
-				resourceService.persist(resource);
-				link(resource);
+				
+				managedResource = resourceService.merge(resource);
 			}
 
+			// Link the managed resource
+			link(managedResource);
+
+			// Update the entry content with the managed resource
+			if (managedResource instanceof UsagePoint) {
+				entry.getContent().setUsagePoint((UsagePoint) managedResource);
+			} else if (managedResource instanceof MeterReading) {
+				entry.getContent().setMeterReading((MeterReading) managedResource);
+			} else if (managedResource instanceof IntervalBlock) {
+				// Handle IntervalBlock relationships
+				List<IntervalBlock> intervalBlocks = entry.getContent().getIntervalBlocks();
+				List<IntervalBlock> newList = new ArrayList<>();
+				for (IntervalBlock block : intervalBlocks) {
+					if (block.getUUID().equals(managedResource.getUUID())) {
+						managedResource.merge(block);
+						newList.add((IntervalBlock) managedResource);
+					} else {
+						newList.add(block);
+					}
+				}
+				entry.getContent().setIntervalBlocks(newList);
+			} else if (managedResource instanceof ReadingType) {
+				entry.getContent().setReadingType((ReadingType) managedResource);
+			} else if (managedResource instanceof TimeConfiguration) {
+				entry.getContent().setLocalTimeParameters((TimeConfiguration) managedResource);
+			} else if (managedResource instanceof ElectricPowerUsageSummary) {
+				entry.getContent().setElectricPowerUsageSummary((ElectricPowerUsageSummary) managedResource);
+			} else if (managedResource instanceof ElectricPowerQualitySummary) {
+				entry.getContent().setElectricPowerQualitySummary((ElectricPowerQualitySummary) managedResource);
+			} else if (managedResource instanceof ApplicationInformation) {
+				entry.getContent().setApplicationInformation((ApplicationInformation) managedResource);
+			}
 		}
 
 		return entry;
@@ -135,9 +145,10 @@ public class EntryProcessorServiceImpl implements EntryProcessorService {
 	// the private functions that do the work
 	//
 	private void link(IdentifiedObject resource) {
-		linkUp(resource);
-		linkUpMember(resource);
-		linkRelatedCollection(resource);
+	// Always operate on a managed instance to avoid detached entity issues
+	linkUp(resource);
+	linkUpMember(resource);
+	linkRelatedCollection(resource);
 	}
 
 	// Copy the entry attributes into the resource attributes
@@ -186,15 +197,16 @@ public class EntryProcessorServiceImpl implements EntryProcessorService {
 	// Establish the rel="up" links into the parent collections
 	//
 	private void linkUp(IdentifiedObject resource) {
-		if (resource.getUpLink() != null) {
+	// Ensure the resource itself is managed before linking to parents
+	if (resource.getUpLink() != null) {
 			List<IdentifiedObject> parents = resourceService
-					.findByAllParentsHref(resource.getUpLink().getHref(),
-							resource);
+		    .findByAllParentsHref(resource.getUpLink().getHref(),
+			    resource);
 			for (IdentifiedObject parent : parents) {
 				// add the parent to the transaction
 				resourceService.merge(parent);
 				// add the resource to the parent collection
-				resource.setUpResource(parent);
+		resource.setUpResource(parent);
 			}
 		}
 	}
@@ -202,32 +214,32 @@ public class EntryProcessorServiceImpl implements EntryProcessorService {
 	// Establish the rel="related" links to the associated resources
 	//
 	private void linkUpMember(IdentifiedObject resource) {
-
-		if (resource.getSelfLink() != null) {
+	// Ensure the resource itself is managed before updating parents
+	if (resource.getSelfLink() != null) {
 			List<IdentifiedObject> parents = resourceService
-					.findByAllParentsHref(resource.getSelfLink().getHref(),
-							resource);
+		    .findByAllParentsHref(resource.getSelfLink().getHref(),
+			    resource);
 			for (IdentifiedObject parent : parents) {
 				// put the existing resource in the transaction
 				resourceService.merge(parent);
 
 				// Based on the kind of resource, do the appropriate fixup
-				if (resource instanceof TimeConfiguration) {
+		if (resource instanceof TimeConfiguration) {
 					UsagePoint usagePoint = (UsagePoint) parent;
 
 					if (usagePoint.getLocalTimeParameters() == null) {
 
-						usagePoint
-								.setLocalTimeParameters((TimeConfiguration) resource);
+			usagePoint
+				.setLocalTimeParameters((TimeConfiguration) resource);
 
 					}
 				}
 
-				if (resource instanceof ReadingType) {
+		if (resource instanceof ReadingType) {
 
 					MeterReading meterReading = (MeterReading) parent;
 					if (meterReading.getReadingType() == null) {
-						meterReading.setReadingType((ReadingType) resource);
+			meterReading.setReadingType((ReadingType) resource);
 					}
 				}
 			}
@@ -235,45 +247,62 @@ public class EntryProcessorServiceImpl implements EntryProcessorService {
 	}
 
 	private void linkRelatedCollection(IdentifiedObject resource) {
+	// Ensure we operate on a managed instance of the resource itself
+	logger.debug("linkRelatedCollection called for resource: " + resource.getMRID());
+	List<IdentifiedObject> relatedResources = resourceService
+		.findAllRelated(resource);
 
-		List<IdentifiedObject> relatedResources = resourceService
-				.findAllRelated(resource);
+	logger.debug("linkRelatedCollection: " + resource.getClass().getSimpleName() + 
+	                   " UUID=" + resource.getMRID() + " has " + relatedResources.size() + " related resources");
 
 		for (IdentifiedObject relatedResource : relatedResources) {
 			// Put the relatedResource in the Transaction
-			resourceService.merge(relatedResource);
+	    IdentifiedObject managedRelated = resourceService.merge(relatedResource);
+	    
+	    logger.debug("Processing related: " + managedRelated.getClass().getSimpleName() +
+	                       " UUID=" + managedRelated.getMRID());
 
-			if (resource instanceof UsagePoint) {
-				if (relatedResource instanceof TimeConfiguration) {
-					((UsagePoint) resource)
-							.setLocalTimeParameters((TimeConfiguration) relatedResource);
+	    if (resource instanceof UsagePoint) {
+		if (managedRelated instanceof TimeConfiguration) {
+		    ((UsagePoint) resource)
+			    .setLocalTimeParameters((TimeConfiguration) managedRelated);
 				}
 
-				if (relatedResource instanceof MeterReading) {
-					((UsagePoint) resource)
-							.addMeterReading((MeterReading) relatedResource);
+		if (managedRelated instanceof MeterReading) {
+		    MeterReading meterReading = (MeterReading) managedRelated;
+		    UsagePoint usagePoint = (UsagePoint) resource;
+		    logger.debug("Setting MeterReading->UsagePoint relationship: MR=" +
+		                       meterReading.getMRID() + " -> UP=" + usagePoint.getMRID());
+		    // Set bidirectional relationship
+		    meterReading.setUsagePoint(usagePoint);
+		    usagePoint.addMeterReading(meterReading);
 				}
 
-				if (relatedResource instanceof ElectricPowerUsageSummary) {
-					((UsagePoint) resource)
-							.addElectricPowerUsageSummary((ElectricPowerUsageSummary) relatedResource);
+		if (managedRelated instanceof ElectricPowerUsageSummary) {
+		    ((UsagePoint) resource)
+			    .addElectricPowerUsageSummary((ElectricPowerUsageSummary) managedRelated);
 				}
 
-				if (relatedResource instanceof ElectricPowerQualitySummary) {
-					((UsagePoint) resource)
-							.addElectricPowerQualitySummary((ElectricPowerQualitySummary) relatedResource);
+		if (managedRelated instanceof ElectricPowerQualitySummary) {
+		    ((UsagePoint) resource)
+			    .addElectricPowerQualitySummary((ElectricPowerQualitySummary) managedRelated);
 				}
 			}
-			if (resource instanceof MeterReading) {
+	    if (resource instanceof MeterReading) {
 
-				if (relatedResource instanceof ReadingType) {
-					((MeterReading) resource)
-							.setReadingType((ReadingType) relatedResource);
+		if (managedRelated instanceof ReadingType) {
+		    ((MeterReading) resource)
+			    .setReadingType((ReadingType) managedRelated);
 				}
 
-				if (relatedResource instanceof IntervalBlock) {
-					((MeterReading) resource)
-							.addIntervalBlock((IntervalBlock) relatedResource);
+		if (managedRelated instanceof IntervalBlock) {
+		    IntervalBlock intervalBlock = (IntervalBlock) managedRelated;
+		    MeterReading meterReading = (MeterReading) resource;
+		    logger.debug("Setting IntervalBlock->MeterReading relationship: IB=" +
+		                       intervalBlock.getMRID() + " -> MR=" + meterReading.getMRID());
+		    // Set bidirectional relationship
+		    intervalBlock.setMeterReading(meterReading);
+		    meterReading.addIntervalBlock(intervalBlock);
 				}
 			}
 

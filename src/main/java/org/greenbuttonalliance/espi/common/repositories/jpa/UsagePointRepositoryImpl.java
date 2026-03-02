@@ -46,7 +46,7 @@ public class UsagePointRepositoryImpl implements UsagePointRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<UsagePoint> findAllByRetailCustomerId(Long id) {
+	public List<UsagePoint> findAllByRetailCustomer_Id(Long id) {
 		return (List<UsagePoint>) this.em
 				.createNamedQuery(
 						UsagePoint.QUERY_FIND_ALL_BY_RETAIL_CUSTOMER_ID)
@@ -76,7 +76,8 @@ public class UsagePointRepositoryImpl implements UsagePointRepository {
 		try {
 			UsagePoint existingUsagePoint = findByUUID(uuid);
 			existingUsagePoint.setRetailCustomer(retailCustomer);
-			persist(existingUsagePoint);
+			// Existing UsagePoint: update association without attempting a new INSERT
+			em.merge(existingUsagePoint);
 		} catch (NoResultException e) {
 			UsagePoint usagePoint = new UsagePoint();
 			usagePoint.setUUID(uuid);
@@ -129,8 +130,10 @@ public class UsagePointRepositoryImpl implements UsagePointRepository {
 		} catch (NoResultException e) {
 			usagePoint.setPublished(new GregorianCalendar());
 			usagePoint.setUpdated(new GregorianCalendar());
-			persist(usagePoint);
+			em.persist(usagePoint);  
+			em.flush();  
 		}
+		
 	}
 
 	@SuppressWarnings("unchecked")

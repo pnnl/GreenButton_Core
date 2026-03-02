@@ -30,7 +30,7 @@ import java.util.UUID;
 
 public interface UsagePointRepository {
 
-	List<UsagePoint> findAllByRetailCustomerId(Long id);
+	List<UsagePoint> findAllByRetailCustomer_Id(Long id);
 
 	UsagePoint findById(Long id);
 

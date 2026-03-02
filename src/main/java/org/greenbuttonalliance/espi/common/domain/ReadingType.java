@@ -104,7 +104,12 @@ public class ReadingType extends IdentifiedObject {
 	public static final String QUERY_FIND_ID_BY_XPATH = "ReadingType.findIdsByXpath";
 
 	@XmlTransient
-	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+	@OneToMany(
+    mappedBy = "readingType",           //changed
+    cascade = CascadeType.ALL, //changed
+    orphanRemoval = true, //changed
+    fetch = FetchType.LAZY            // changed 
+)
 	private List<MeterReading> meterReadings;
 
 	protected String accumulationBehaviour;

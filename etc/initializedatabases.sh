@@ -27,17 +27,30 @@
 #
 # Copy the appropriate version of prepopulatesql_<dc or tp>_<host><port>.sql to prepopulatesql.sql for your installation
 
-# drop/create databases 
-mysql --user=root --password=password < cleandatabases_dc.sql
-mysql --user=root --password=password < cleandatabases_tp.sql
+#!/usr/bin/env bash
+set -euo pipefail
 
-# create tables 
-mysql --user=root --password=password < thirdpartymysql.sql
-mysql --user=root --password=password < datacustodianmysql.sql
-mysql --user=root --password=password < tokenstore.sql
+MYSQL="mysql --user=root --password=password --show-warnings -v"
+
+run() {
+  local f="$1"
+  echo "===== START $f ====="
+  $MYSQL < "$f"
+  echo "===== DONE  $f ====="
+  echo
+}
+
+# drop/create & clean
+run cleandatabases_dc.sql
+run cleandatabases_tp.sql
+
+# create tables
+run thirdpartymysql.sql
+run datacustodianmysql.sql
+run tokenstore.sql
 
 # prepopulate tables
-mysql --user=root --password=password < prepopulatesql_users_dc.sql
-mysql --user=root --password=password < prepopulatesql_users_tp.sql
-mysql --user=root --password=password < prepopulatesql_dc.sql
-mysql --user=root --password=password < prepopulatesql_tp.sql
+run prepopulatesql_users_dc.sql
+run prepopulatesql_users_tp.sql
+run prepopulatesql_dc.sql
+run prepopulatesql_tp.sql

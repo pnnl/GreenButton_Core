@@ -22,6 +22,8 @@ package org.greenbuttonalliance.espi.common.service;
 
 import org.greenbuttonalliance.espi.common.domain.IdentifiedObject;
 import org.greenbuttonalliance.espi.common.domain.Linkable;
+import org.greenbuttonalliance.espi.common.domain.MeterReading;
+import org.greenbuttonalliance.espi.common.domain.UsagePoint;
 import org.greenbuttonalliance.espi.common.models.atom.EntryType;
 import org.greenbuttonalliance.espi.common.utils.EntryTypeIterator;
 
@@ -54,6 +56,10 @@ public interface ResourceService {
 	List<IdentifiedObject> findAllRelated(Linkable resource);
 
 	<T> T findByUUID(UUID uuid, Class<T> clazz);
+
+	UsagePoint findByUUIDString(String uuidString);
+
+	MeterReading findMeterReadingWithIntervalBlocks(Long meterReadingId);
 
 	<T extends IdentifiedObject> T testById(Long id, Class<T> clazz);
 

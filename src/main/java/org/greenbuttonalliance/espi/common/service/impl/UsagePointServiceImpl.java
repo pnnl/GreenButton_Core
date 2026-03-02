@@ -21,6 +21,8 @@
 package org.greenbuttonalliance.espi.common.service.impl;
 
 import com.sun.syndication.io.FeedException;
+ 
+
 import org.greenbuttonalliance.espi.common.domain.RetailCustomer;
 import org.greenbuttonalliance.espi.common.domain.Subscription;
 import org.greenbuttonalliance.espi.common.domain.UsagePoint;
@@ -33,249 +35,243 @@ import org.greenbuttonalliance.espi.common.service.UsagePointService;
 import org.greenbuttonalliance.espi.common.utils.EntryTypeIterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional(rollbackFor = { javax.xml.bind.JAXBException.class }, noRollbackFor = {
-		javax.persistence.NoResultException.class,
-		org.springframework.dao.EmptyResultDataAccessException.class })
+@Transactional(
+    rollbackFor = { JAXBException.class },
+    noRollbackFor = { NoResultException.class, org.springframework.dao.EmptyResultDataAccessException.class }
+)
 public class UsagePointServiceImpl implements UsagePointService {
 
-	@Autowired
-	private UsagePointRepository usagePointRepository;
+    @Autowired
+    private UsagePointRepository usagePointRepository;
 
-	@Autowired
-	private ImportService importService;
+    @Autowired
+    private ImportService importService;
 
-	@Autowired
-	private ResourceRepository repository;
+    @Autowired
+    private ResourceRepository repository;
 
-	@Autowired
-	private ResourceService resourceService;
+    @Autowired
+    private ResourceService resourceService;
 
-	public void setImportService(ImportService importService) {
-		this.importService = importService;
-	}
+    // Inject EntityManager so we can explicitly flush when needed
+    @PersistenceContext
+    private EntityManager em;
 
-	public ImportService getImportService() {
-		return importService;
-	}
+    public void setImportService(ImportService importService) {
+        this.importService = importService;
+    }
 
-	public void setRepository(UsagePointRepository usagePointRepository) {
-		this.usagePointRepository = usagePointRepository;
-	}
+    public ImportService getImportService() {
+        return importService;
+    }
 
-	public UsagePointRepository getRepository() {
-		return usagePointRepository;
-	}
+    public void setRepository(UsagePointRepository usagePointRepository) {
+        this.usagePointRepository = usagePointRepository;
+    }
 
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
-	}
+    public UsagePointRepository getRepository() {
+        return usagePointRepository;
+    }
 
-	public ResourceService getResourceService() {
-		return resourceService;
-	}
+    public void setResourceService(ResourceService resourceService) {
+        this.resourceService = resourceService;
+    }
 
-	@Override
-	public List<UsagePoint> findAllByRetailCustomer(RetailCustomer customer) {
-		return usagePointRepository.findAllByRetailCustomerId(customer.getId());
-	}
+    public ResourceService getResourceService() {
+        return resourceService;
+    }
 
-	@Override
-	public UsagePoint findById(Long usagePointId) {
-		return this.usagePointRepository.findById(usagePointId);
-	}
+    @Override
+    public List<UsagePoint> findAllByRetailCustomer(RetailCustomer customer) {
+        return usagePointRepository.findAllByRetailCustomer_Id(customer.getId());
+    }
 
-	@Override
-	public UsagePoint findById(Long retailCustomerId, Long usagePointId) {
-		// TODO: if needed, this needs to be scoped down to the RetailCustomer
-		// collection
-		return this.usagePointRepository.findById(usagePointId);
-	}
+    @Override
+    public UsagePoint findById(Long usagePointId) {
+        return this.usagePointRepository.findById(usagePointId);
+    }
 
-	@Override
-	public void persist(UsagePoint up) {
-		this.usagePointRepository.persist(up);
-	}
+    @Override
+    public UsagePoint findById(Long retailCustomerId, Long usagePointId) {
+        // TODO: if needed, this needs to be scoped down to the RetailCustomer
+        // collection
+        return this.usagePointRepository.findById(usagePointId);
+    }
 
-	@Override
-	public void createOrReplaceByUUID(UsagePoint usagePoint) {
-		usagePointRepository.createOrReplaceByUUID(usagePoint);
-	}
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void persist(UsagePoint up) {
+        this.usagePointRepository.persist(up);
+        em.flush();  // force INSERT now so DB constraints are checked immediately
+    }
 
-	@Override
-	public void associateByUUID(RetailCustomer retailCustomer, UUID uuid) {
-		usagePointRepository.associateByUUID(retailCustomer, uuid);
-	}
+    @Override
+    public void createOrReplaceByUUID(UsagePoint usagePoint) {
+        usagePointRepository.createOrReplaceByUUID(usagePoint);
+    }
 
-	@Override
-	public UsagePoint findByUUID(UUID uuid) {
-		return usagePointRepository.findByUUID(uuid);
-	}
+    @Override
+    public void associateByUUID(RetailCustomer retailCustomer, UUID uuid) {
+        usagePointRepository.associateByUUID(retailCustomer, uuid);
+    }
 
-	@Override
-	public UsagePoint findByHashedId(String usagePointHashedId) {
-		return findByUUID(UUID.fromString(usagePointHashedId));
-	}
+    @Override
+    public UsagePoint findByUUID(UUID uuid) {
+        return usagePointRepository.findByUUID(uuid);
+    }
 
-	@Override
-	public List<UsagePoint> findAllUpdatedFor(Subscription subscription) {
-		return usagePointRepository.findAllUpdatedFor(subscription);
-	}
+    @Override
+    public UsagePoint findByUUIDString(String uuidString) {
+        return resourceService.findByUUIDString(uuidString);
+    }
 
-	@Override
-	public void deleteByHashedId(String usagePointHashedId) {
-		UsagePoint usagePoint = findByHashedId(usagePointHashedId);
-		if (usagePoint != null) {
-			usagePointRepository.deleteById(usagePoint.getId());
-		}
-	}
+    @Override
+    public UsagePoint findByHashedId(String usagePointHashedId) {
+        return findByUUID(UUID.fromString(usagePointHashedId));
+    }
 
-	@Override
-	public List<Long> findAllIdsForRetailCustomer(Long retailCustomerId) {
-		return usagePointRepository
-				.findAllIdsForRetailCustomer(retailCustomerId);
-	}
+    @Override
+    public List<UsagePoint> findAllUpdatedFor(Subscription subscription) {
+        return usagePointRepository.findAllUpdatedFor(subscription);
+    }
 
-	@Override
-	public String feedFor(List<UsagePoint> usagePoints) throws FeedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void deleteByHashedId(String usagePointHashedId) {
+        UsagePoint usagePoint = findByHashedId(usagePointHashedId);
+        if (usagePoint != null) {
+            usagePointRepository.deleteById(usagePoint.getId());
+        }
+    }
 
-	@Override
-	public String entryFor(UsagePoint usagePoint) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<Long> findAllIdsForRetailCustomer(Long retailCustomerId) {
+        return usagePointRepository.findAllIdsForRetailCustomer(retailCustomerId);
+    }
 
-	@Override
-	public List<UsagePoint> findAllByRetailCustomer(Long retailCustomerId) {
-		return usagePointRepository.findAllByRetailCustomerId(retailCustomerId);
-	}
+    @Override
+    public String feedFor(List<UsagePoint> usagePoints) throws FeedException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public void add(UsagePoint usagePoint) {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public String entryFor(UsagePoint usagePoint) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public void delete(UsagePoint usagePoint) {
+    @Override
+    public List<UsagePoint> findAllByRetailCustomer(Long retailCustomerId) {
+        return usagePointRepository.findAllByRetailCustomer_Id(retailCustomerId);
+    }
 
-		usagePointRepository.deleteById(usagePoint.getId());
+    @Override
+    public void add(UsagePoint usagePoint) {
+        // TODO Auto-generated method stub
+    }
 
-	}
+    @Override
+    public void delete(UsagePoint usagePoint) {
+        usagePointRepository.deleteById(usagePoint.getId());
+    }
 
-	@Override
-	public UsagePoint importResource(InputStream stream) {
+    @Override
+    public UsagePoint importResource(InputStream stream) {
+        UsagePoint usagePoint = null;
+        try {
+            importService.importData(stream, null);
+            usagePoint = importService.getEntries().get(0).getContent().getUsagePoint();
+        } catch (Exception e) {
+            // swallow and return null
+        }
+        return usagePoint;
+    }
 
-		UsagePoint usagePoint = null;
-		try {
-			importService.importData(stream, null);
-			usagePoint = importService.getEntries().get(0).getContent()
-					.getUsagePoint();
+    @Override
+    public EntryType findEntryType(Long retailCustomerId, Long usagePointId) {
+        EntryType result = null;
+        try {
+            // TODO - this is sub-optimal (but defers the need to understand
+            // creation of an EntryType)
+            List<Long> temp = new ArrayList<>();
+            temp.add(usagePointId);
+            findAllIdsForRetailCustomer(retailCustomerId);
+            result = (new EntryTypeIterator(resourceService, temp, UsagePoint.class)).next();
+        } catch (Exception e) {
+            // TODO need a log file entry as we are going to return a null if it's not found
+            result = null;
+        }
+        return result;
+    }
 
-		} catch (Exception e) {
+    @Override
+    public EntryTypeIterator findEntryTypeIterator() {
+        EntryTypeIterator result = null;
+        try {
+            // TODO - this is sub-optimal (but defers the need to understand creation of an EntryType)
+            List<Long> temp = usagePointRepository.findAllIds();
+            result = new EntryTypeIterator(resourceService, temp, UsagePoint.class);
+        } catch (Exception e) {
+            // TODO need a log file entry as we are going to return a null if it's not found
+            result = null;
+        }
+        return result;
+    }
 
-		}
-		return usagePoint;
-	}
+    @Override
+    public EntryType findEntryType(Long usagePointId) {
+        EntryType result = null;
+        try {
+            // TODO - this is sub-optimal (but defers the need to understand creation of an EntryType)
+            List<Long> temp = usagePointRepository.findAllIds();
+            result = (new EntryTypeIterator(resourceService, temp, UsagePoint.class)).nextEntry(UsagePoint.class);
+        } catch (Exception e) {
+            // TODO need a log file entry as we are going to return a null if it's not found
+            result = null;
+        }
+        return result;
+    }
 
-	@Override
-	public EntryType findEntryType(Long retailCustomerId, Long usagePointId) {
-		EntryType result = null;
-		try {
-			// TODO - this is sub-optimal (but defers the need to understand
-			// creation of an EntryType
-			List<Long> temp = new ArrayList<Long>();
-			temp.add(usagePointId);
-			findAllIdsForRetailCustomer(retailCustomerId);
-			result = (new EntryTypeIterator(resourceService, temp,
-					UsagePoint.class)).next();
-		} catch (Exception e) {
-			// TODO need a log file entry as we are going to return a null if
-			// it's not found
-			result = null;
-		}
-		return result;
-	}
+    @Override
+    public EntryTypeIterator findEntryTypeIterator(Long retailCustomerId) {
+        EntryTypeIterator result = null;
+        try {
+            List<Long> allIdsForRetailCustomer = findAllIdsForRetailCustomer(retailCustomerId);
+            result = new EntryTypeIterator(resourceService, allIdsForRetailCustomer, UsagePoint.class);
+        } catch (Exception e) {
+            // TODO need a log file entry as we are going to return a null if it's not found
+            result = null;
+        }
+        return result;
+    }
 
-	@Override
-	public EntryTypeIterator findEntryTypeIterator() {
-		EntryTypeIterator result = null;
-		try {
-			// TODO - this is sub-optimal (but defers the need to understand
-			// creation of an EntryType
-			List<Long> temp = new ArrayList<Long>();
-			temp = usagePointRepository.findAllIds();
-			result = new EntryTypeIterator(resourceService, temp,
-					UsagePoint.class);
-		} catch (Exception e) {
-			// TODO need a log file entry as we are going to return a null if
-			// it's not found
-			result = null;
-		}
-		return result;
-	}
-
-	@Override
-	public EntryType findEntryType(Long usagePointId) {
-		EntryType result = null;
-		try {
-			// TODO - this is sub-optimal (but defers the need to understan
-			// creation of an EntryType
-			List<Long> temp = new ArrayList<Long>();
-			temp = usagePointRepository.findAllIds();
-			result = (new EntryTypeIterator(resourceService, temp,
-					UsagePoint.class)).nextEntry(UsagePoint.class);
-		} catch (Exception e) {
-			// TODO need a log file entry as we are going to return a null if
-			// it's not found
-			result = null;
-		}
-		return result;
-	}
-
-	@Override
-	public EntryTypeIterator findEntryTypeIterator(Long retailCustomerId) {
-		EntryTypeIterator result = null;
-		try {
-			List<Long> allIdsForRetailCustomer = findAllIdsForRetailCustomer(retailCustomerId);
-			result = new EntryTypeIterator(resourceService,
-					allIdsForRetailCustomer, UsagePoint.class);
-		} catch (Exception e) {
-			// TODO need a log file entry as we are going to return a null if
-			// it's not found
-
-			result = null;
-		}
-		return result;
-	}
-
-	@Override
-	public EntryTypeIterator findEntryTypeIterator(Long retailCustomerId,
-			Long usagePointId) {
-		EntryTypeIterator result = null;
-		List<Long> temp = new ArrayList<Long>();
-		temp.add(usagePointId);
-		try {
-			// make the call to insure it is a valid usagePointId
-			resourceService.findIdByXPath(retailCustomerId, usagePointId,
-					UsagePoint.class);
-			result = (new EntryTypeIterator(resourceService, temp,
-					UsagePoint.class));
-		} catch (Exception e) {
-			System.out
-					.printf("****UsagePointService: Seraching for an invalide UsagePointId - %d: %s\n",
-							usagePointId, e.toString());
-			result = null;
-		}
-		return result;
-	}
+    @Override
+    public EntryTypeIterator findEntryTypeIterator(Long retailCustomerId, Long usagePointId) {
+        EntryTypeIterator result = null;
+        List<Long> temp = new ArrayList<>();
+        temp.add(usagePointId);
+        try {
+            // make the call to ensure it is a valid usagePointId
+            resourceService.findIdByXPath(retailCustomerId, usagePointId, UsagePoint.class);
+            result = new EntryTypeIterator(resourceService, temp, UsagePoint.class);
+        } catch (Exception e) {
+            System.out.printf("****UsagePointService: Searching for an invalid UsagePointId - %d: %s%n",
+                              usagePointId, e.toString());
+            result = null;
+        }
+        return result;
+    }
 }

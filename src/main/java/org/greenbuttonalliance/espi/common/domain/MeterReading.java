@@ -64,12 +64,13 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MeterReading")
 @Entity
+@Access(AccessType.FIELD)
 @Table(name = "meter_readings", uniqueConstraints = { @UniqueConstraint(columnNames = { "uuid" }) })
 @XmlJavaTypeAdapter(MeterReadingAdapter.class)
 @NamedQueries(value = {
 		@NamedQuery(name = MeterReading.QUERY_FIND_BY_ID, query = "SELECT reading FROM MeterReading reading WHERE reading.id = :id"),
 		@NamedQuery(name = MeterReading.QUERY_FIND_BY_UUID, query = "SELECT meterReading FROM MeterReading meterReading WHERE meterReading.uuid = :uuid"),
-		@NamedQuery(name = MeterReading.QUERY_FIND_BY_RELATED_HREF, query = "SELECT reading FROM MeterReading reading join reading.relatedLinks link WHERE link.href = :href"),
+		@NamedQuery(name = MeterReading.QUERY_FIND_BY_RELATED_HREF, query = "SELECT reading FROM MeterReading reading WHERE reading.selfLink.href = :href"),
 		@NamedQuery(name = MeterReading.QUERY_FIND_ALL_RELATED, query = "SELECT readingType FROM ReadingType readingType WHERE readingType.selfLink.href in (:relatedLinkHrefs)"),
 		@NamedQuery(name = MeterReading.QUERY_FIND_ALL_IDS_BY_USAGE_POINT_ID, query = "SELECT reading.id FROM MeterReading reading WHERE reading.usagePoint.id = :usagePointId"),
 		@NamedQuery(name = MeterReading.QUERY_FIND_ALL_IDS, query = "SELECT meterReading.id FROM MeterReading meterReading"),
@@ -99,11 +100,13 @@ public class MeterReading extends IdentifiedObject {
 	private List<LinkType> relatedLinks = new ArrayList<>();
 
 	@XmlTransient
+	@Access(AccessType.FIELD)  
 	@ManyToOne
 	@JoinColumn(name = "usage_point_id")
 	private UsagePoint usagePoint;
 
 	@XmlTransient
+	@Access(AccessType.FIELD)  
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "reading_type_id")
 	private ReadingType readingType;
@@ -149,6 +152,7 @@ public class MeterReading extends IdentifiedObject {
 	@Override
 	public void setUpResource(IdentifiedObject resource) {
 		UsagePoint usagePoint = (UsagePoint) resource;
+		this.usagePoint = usagePoint;
 		usagePoint.addMeterReading(this);
 	}
 

@@ -1,0 +1,873 @@
+<?xml version='1.0' encoding='utf-8'?>
+<IntervalBlock xmlns="http://naesb.org/espi">
+				<interval>
+					<duration>86400</duration>
+					<start>1331355600</start>
+					
+				</interval>
+				<IntervalReading>
+					<cost>970</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331355600</start>
+						
+					</timePeriod>
+					<value>323</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>905</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331356500</start>
+						
+					</timePeriod>
+					<value>301</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>890</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331357400</start>
+						
+					</timePeriod>
+					<value>296</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>824</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331358300</start>
+						
+					</timePeriod>
+					<value>274</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>842</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331359200</start>
+						
+					</timePeriod>
+					<value>280</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>870</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331360100</start>
+						
+					</timePeriod>
+					<value>290</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>844</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331361000</start>
+						
+					</timePeriod>
+					<value>281</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>915</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331361900</start>
+						
+					</timePeriod>
+					<value>305</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>939</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331362800</start>
+						
+					</timePeriod>
+					<value>313</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>959</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331363700</start>
+						
+					</timePeriod>
+					<value>319</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>930</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331364600</start>
+						
+					</timePeriod>
+					<value>310</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>914</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331365500</start>
+						
+					</timePeriod>
+					<value>304</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>936</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331366400</start>
+						
+					</timePeriod>
+					<value>312</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>845</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331367300</start>
+						
+					</timePeriod>
+					<value>281</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>959</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331368200</start>
+						
+					</timePeriod>
+					<value>319</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>905</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331369100</start>
+						
+					</timePeriod>
+					<value>301</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>958</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331370000</start>
+						
+					</timePeriod>
+					<value>319</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>845</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331370900</start>
+						
+					</timePeriod>
+					<value>281</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>989</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331371800</start>
+						
+					</timePeriod>
+					<value>329</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>951</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331372700</start>
+						
+					</timePeriod>
+					<value>317</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>2471</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331373600</start>
+						
+					</timePeriod>
+					<value>823</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>2774</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331374500</start>
+						
+					</timePeriod>
+					<value>924</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>2593</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331375400</start>
+						
+					</timePeriod>
+					<value>864</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>2552</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331376300</start>
+						
+					</timePeriod>
+					<value>850</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9665</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331377200</start>
+						
+					</timePeriod>
+					<value>1610</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8357</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331378100</start>
+						
+					</timePeriod>
+					<value>1392</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8860</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331379000</start>
+						
+					</timePeriod>
+					<value>1476</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8432</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331379900</start>
+						
+					</timePeriod>
+					<value>1405</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8631</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331380800</start>
+						
+					</timePeriod>
+					<value>1438</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8451</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331381700</start>
+						
+					</timePeriod>
+					<value>1408</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8991</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331382600</start>
+						
+					</timePeriod>
+					<value>1498</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9071</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331383500</start>
+						
+					</timePeriod>
+					<value>1511</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9509</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331384400</start>
+						
+					</timePeriod>
+					<value>1584</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8767</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331385300</start>
+						
+					</timePeriod>
+					<value>1461</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8717</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331386200</start>
+						
+					</timePeriod>
+					<value>1452</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8326</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331387100</start>
+						
+					</timePeriod>
+					<value>1387</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9645</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331388000</start>
+						
+					</timePeriod>
+					<value>1607</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9671</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331388900</start>
+						
+					</timePeriod>
+					<value>1611</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9774</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331389800</start>
+						
+					</timePeriod>
+					<value>1629</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8808</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331390700</start>
+						
+					</timePeriod>
+					<value>1468</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8570</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331391600</start>
+						
+					</timePeriod>
+					<value>1428</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8605</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331392500</start>
+						
+					</timePeriod>
+					<value>1434</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8162</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331393400</start>
+						
+					</timePeriod>
+					<value>1360</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8578</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331394300</start>
+						
+					</timePeriod>
+					<value>1429</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8593</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331395200</start>
+						
+					</timePeriod>
+					<value>1432</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9183</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331396100</start>
+						
+					</timePeriod>
+					<value>1530</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8568</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331397000</start>
+						
+					</timePeriod>
+					<value>1428</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8649</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331397900</start>
+						
+					</timePeriod>
+					<value>1441</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8596</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331398800</start>
+						
+					</timePeriod>
+					<value>1432</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8978</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331399700</start>
+						
+					</timePeriod>
+					<value>1496</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8411</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331400600</start>
+						
+					</timePeriod>
+					<value>1401</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8261</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331401500</start>
+						
+					</timePeriod>
+					<value>1376</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9163</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331402400</start>
+						
+					</timePeriod>
+					<value>1527</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9524</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331403300</start>
+						
+					</timePeriod>
+					<value>1587</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9549</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331404200</start>
+						
+					</timePeriod>
+					<value>1591</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9664</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331405100</start>
+						
+					</timePeriod>
+					<value>1610</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>13643</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331406000</start>
+						
+					</timePeriod>
+					<value>1515</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>12960</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331406900</start>
+						
+					</timePeriod>
+					<value>1440</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>13002</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331407800</start>
+						
+					</timePeriod>
+					<value>1444</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>13284</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331408700</start>
+						
+					</timePeriod>
+					<value>1476</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>19262</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331409600</start>
+						
+					</timePeriod>
+					<value>1605</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>19041</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331410500</start>
+						
+					</timePeriod>
+					<value>1586</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>19790</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331411400</start>
+						
+					</timePeriod>
+					<value>1649</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>17062</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331412300</start>
+						
+					</timePeriod>
+					<value>1421</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>20610</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331413200</start>
+						
+					</timePeriod>
+					<value>1374</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>21318</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331414100</start>
+						
+					</timePeriod>
+					<value>1421</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>22111</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331415000</start>
+						
+					</timePeriod>
+					<value>1474</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>24300</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331415900</start>
+						
+					</timePeriod>
+					<value>1620</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>23021</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331416800</start>
+						
+					</timePeriod>
+					<value>1534</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>22044</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331417700</start>
+						
+					</timePeriod>
+					<value>1469</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>24398</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331418600</start>
+						
+					</timePeriod>
+					<value>1626</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>23313</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331419500</start>
+						
+					</timePeriod>
+					<value>1554</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>23087</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331420400</start>
+						
+					</timePeriod>
+					<value>1539</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>22593</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331421300</start>
+						
+					</timePeriod>
+					<value>1506</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>21636</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331422200</start>
+						
+					</timePeriod>
+					<value>1442</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>22476</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331423100</start>
+						
+					</timePeriod>
+					<value>1498</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>17894</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331424000</start>
+						
+					</timePeriod>
+					<value>1491</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>17581</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331424900</start>
+						
+					</timePeriod>
+					<value>1465</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>19100</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331425800</start>
+						
+					</timePeriod>
+					<value>1591</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>19829</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331426700</start>
+						
+					</timePeriod>
+					<value>1652</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>12732</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331427600</start>
+						
+					</timePeriod>
+					<value>1414</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>13683</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331428500</start>
+						
+					</timePeriod>
+					<value>1520</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>12781</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331429400</start>
+						
+					</timePeriod>
+					<value>1420</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>14900</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331430300</start>
+						
+					</timePeriod>
+					<value>1655</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9022</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331431200</start>
+						
+					</timePeriod>
+					<value>1503</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9823</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331432100</start>
+						
+					</timePeriod>
+					<value>1637</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>9024</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331433000</start>
+						
+					</timePeriod>
+					<value>1504</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>8309</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331433900</start>
+						
+					</timePeriod>
+					<value>1384</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>4625</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331434800</start>
+						
+					</timePeriod>
+					<value>1541</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>4505</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331435700</start>
+						
+					</timePeriod>
+					<value>1501</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>4333</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331436600</start>
+						
+					</timePeriod>
+					<value>1444</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>4578</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331437500</start>
+						
+					</timePeriod>
+					<value>1526</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>2891</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331438400</start>
+						
+					</timePeriod>
+					<value>963</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>2576</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331439300</start>
+						
+					</timePeriod>
+					<value>858</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>2457</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331440200</start>
+						
+					</timePeriod>
+					<value>819</value>
+				</IntervalReading>
+				<IntervalReading>
+					<cost>2702</cost>
+					<timePeriod>
+						<duration>900</duration>
+						<start>1331441100</start>
+						
+					</timePeriod>
+					<value>900</value>
+				</IntervalReading>
+			</IntervalBlock>
+		

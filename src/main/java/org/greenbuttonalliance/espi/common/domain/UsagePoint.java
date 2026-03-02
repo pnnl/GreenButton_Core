@@ -79,7 +79,7 @@ import java.util.Set;
         @NamedQuery(name = UsagePoint.QUERY_FIND_BY_UUID, query = "SELECT point FROM UsagePoint point WHERE point.uuid = :uuid"),
         @NamedQuery(name = UsagePoint.QUERY_FIND_BY_ID, query = "SELECT point FROM UsagePoint point WHERE point.id = :id"),
         @NamedQuery(name = UsagePoint.QUERY_FIND_ALL_UPDATED_FOR, query = "SELECT point FROM UsagePoint point WHERE point.updated > :lastUpdate"),
-        @NamedQuery(name = UsagePoint.QUERY_FIND_BY_RELATED_HREF, query = "SELECT point FROM UsagePoint point join point.relatedLinks link WHERE link.href = :href"),
+        @NamedQuery(name = UsagePoint.QUERY_FIND_BY_RELATED_HREF, query = "SELECT point FROM UsagePoint point WHERE point.selfLink.href = :href"),
         @NamedQuery(name = UsagePoint.QUERY_FIND_ALL_RELATED, query = "SELECT timeConfiguration FROM TimeConfiguration timeConfiguration WHERE timeConfiguration.selfLink.href in (:relatedLinkHrefs)"),
         @NamedQuery(name = UsagePoint.QUERY_FIND_BY_URI, query = "SELECT point FROM UsagePoint point WHERE point.uri = :uri"),
         @NamedQuery(name = UsagePoint.QUERY_FIND_ALL_IDS_FOR_RETAIL_CUSTOMER, query = "SELECT point.id from UsagePoint point where point.retailCustomer.id = :retailCustomerId"),

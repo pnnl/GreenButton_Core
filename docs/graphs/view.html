@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenESPI DB Graphs</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #0b1020;
+        --card: rgba(17, 24, 39, 0.72);
+        --text: #e6edf3;
+        --muted: rgba(230, 237, 243, 0.7);
+        --border: rgba(255, 255, 255, 0.10);
+        --accent: rgba(59, 130, 246, 0.45);
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 24px;
+      }
+      h1 { margin: 0 0 8px; font-size: 20px; }
+      p { margin: 0 0 20px; color: var(--muted); }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px;
+        overflow-x: auto;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.25), 0 12px 40px rgba(0,0,0,0.35);
+        backdrop-filter: blur(8px);
+      }
+      .card h2 {
+        margin: 0 0 10px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+      .pill {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 12px;
+        margin-left: 8px;
+      }
+      .topbar {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .topbar strong {
+        color: var(--text);
+      }
+      /* Mermaid tweaks */
+      .mermaid {
+        min-width: 900px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div>
+        <h1>OpenESPI Database Graphs <span class="pill">auto-generated, color-coded</span></h1>
+        <p>Generated from the current dev MySQL database. This page auto-refreshes to pick up regenerated `.mmd` files.</p>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Schema topology (FK graph)</h2>
+        <pre class="mermaid" id="schema">loading…</pre>
+        <div class="hint">Tip: zoom your browser if needed.</div>
+      </div>
+
+      <div class="card">
+        <h2>Privacy variant linkages (live data)</h2>
+        <pre class="mermaid" id="privacy">loading…</pre>
+      </div>
+
+      <div class="card">
+        <h2>Data sharing flow (context, start → finish)</h2>
+        <pre class="mermaid" id="flowConsent">loading…</pre>
+      </div>
+
+      <div class="card">
+        <h2>Privacy selection → exported data</h2>
+        <pre class="mermaid" id="flowPrivacy">loading…</pre>
+      </div>
+    </div>
+
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'dark',
+        flowchart: { curve: 'basis' },
+        themeVariables: {
+          background: '#0b1020',
+          primaryColor: '#111827',
+          primaryTextColor: '#e6edf3',
+          primaryBorderColor: 'rgba(255,255,255,0.18)',
+          lineColor: 'rgba(230,237,243,0.35)',
+          textColor: '#e6edf3',
+          fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif',
+        },
+      });
+
+      const REFRESH_MS = 5000;
+
+      async function loadInto(id, file, cacheBuster) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        try {
+          const url = `${file}?v=${encodeURIComponent(String(cacheBuster))}`;
+          const resp = await fetch(url, { cache: 'no-store' });
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          el.textContent = await resp.text();
+        } catch (e) {
+          el.textContent = `Failed to load ${file}: ${e?.message || e}`;
+        }
+      }
+
+      async function refresh() {
+        const cacheBuster = Date.now();
+        await loadInto('schema', './dc_schema_focus.mmd', cacheBuster);
+        await loadInto('privacy', './dc_privacy.mmd', cacheBuster);
+        await loadInto('flowConsent', './flow_consent_to_data.mmd', cacheBuster);
+        await loadInto('flowPrivacy', './flow_privacy_variant_selection.mmd', cacheBuster);
+        await mermaid.run({ querySelector: '.mermaid' });
+      }
+
+      await refresh();
+      setInterval(() => {
+        refresh().catch(() => {});
+      }, REFRESH_MS);
+    </script>
+  </body>
+</html>

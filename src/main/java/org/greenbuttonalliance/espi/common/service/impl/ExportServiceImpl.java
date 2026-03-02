@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.greenbuttonalliance.espi.common.domain.*;
 import org.greenbuttonalliance.espi.common.models.atom.DateTimeType;
 import org.greenbuttonalliance.espi.common.models.atom.EntryType;
+import org.greenbuttonalliance.espi.common.models.atom.LinkType;
 import org.greenbuttonalliance.espi.common.service.*;
 import org.greenbuttonalliance.espi.common.utils.AtomMarshallerListener;
 import org.greenbuttonalliance.espi.common.utils.DateConverter;
@@ -40,6 +41,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -512,8 +514,9 @@ public class ExportServiceImpl implements ExportService {
 			Long usagePointId, Long meterReadingId, Long intervalBlockId,
 			OutputStream stream, ExportFilter exportFilter) throws IOException {
 		String hrefFragment = "/Subscription/" + subscriptionId
-				+ "/UsagePoint/" + usagePointId + "/IntervalBlock/"
-				+ intervalBlockId;
+				+ "/UsagePoint/" + usagePointId
+				+ "/MeterReading/" + meterReadingId
+				+ "/IntervalBlock/" + intervalBlockId;
 		exportEntry(
 				subscriptionId,
 				findEntryTypeXPath(subscriptionId, retailCustomerId,
@@ -527,7 +530,9 @@ public class ExportServiceImpl implements ExportService {
 			Long retailCustomerId, Long usagePointId, Long meterReadingId,
 			OutputStream stream, ExportFilter exportFilter) throws IOException {
 		String hrefFragment = "/Subscription/" + subscriptionId
-				+ "/UsagePoint/" + usagePointId + "/IntervalBlock";
+				+ "/UsagePoint/" + usagePointId
+				+ "/MeterReading/" + meterReadingId
+				+ "/IntervalBlock";
 		exportEntries(
 				subscriptionId,
 				findEntryTypeIteratorXPath(subscriptionId, retailCustomerId,
@@ -763,6 +768,10 @@ public class ExportServiceImpl implements ExportService {
 		// first find all the usagePointIds this subscription is related to
 		List<Long> usagePointIdList = subscriptionService
 				.findUsagePointIds(subscriptionId);
+		
+		// Apply privacy filtering if needed
+		usagePointIdList = filterUsagePointsByPrivacyScope(subscriptionId, usagePointIdList);
+		
 		exportEntriesFull(subscriptionId,
 				resourceService.findEntryTypeIterator(usagePointIdList,
 						UsagePoint.class), stream, exportFilter, hrefFragment);
@@ -776,6 +785,10 @@ public class ExportServiceImpl implements ExportService {
 		// first find all the usagePointIds this subscription is related to
 		List<Long> usagePointIdList = subscriptionService
 				.findUsagePointIds(subscriptionId);
+		
+		// Apply privacy filtering if needed
+		usagePointIdList = filterUsagePointsByPrivacyScope(subscriptionId, usagePointIdList);
+		
 		exportEntriesFull(subscriptionId,
 				resourceService.findEntryTypeIterator(usagePointIdList,
 						UsagePoint.class), stream, exportFilter, hrefFragment);
@@ -789,6 +802,10 @@ public class ExportServiceImpl implements ExportService {
 				+ "/UsagePoint/" + usagePointId;
 		List<Long> usagePointIdList = new ArrayList<Long>();
 		List<Long> temp = subscriptionService.findUsagePointIds(subscriptionId);
+		
+		// Apply privacy filtering if needed
+		temp = filterUsagePointsByPrivacyScope(subscriptionId, temp);
+		
 		if (temp.contains(usagePointId)) {
 			usagePointIdList.add(usagePointId);
 		}
@@ -1114,9 +1131,10 @@ public class ExportServiceImpl implements ExportService {
 				exportEntryFull(subscriptionId, entry, stream, exportFilter,
 						hrefFragment);
 			} catch (Exception e) {
-				if(logger.isErrorEnabled()) {
-					logger.error("exportEntriesInternal: The requested collection contains no resources: " +
-							hrefFragment + "&n");
+				if (logger.isErrorEnabled()) {
+					logger.error(
+							"exportEntriesInternal: Failed exporting an entry for collection: "
+									+ hrefFragment + "&n", e);
 				}
 
 			}
@@ -1283,12 +1301,112 @@ public class ExportServiceImpl implements ExportService {
 						temp = resourceService.findAllIdsByXPath(id1, id2,
 								clazz);
 					} else {
-						if (!(id1.equals(0L))) {
-							// we just want the UsagePoints in the Subscription
-							for (UsagePoint up : subscription.getUsagePoints()) {
-								temp.add(up.getId());
+			if (!(id1.equals(0L))) {
+				// we just want the UsagePoints in the Subscription
+				List<UsagePoint> subscriptionUsagePoints = subscription.getUsagePoints();
+				
+				// Check if we need to filter by privacy scope
+				if (subscription != null) {
+					Authorization authorization = subscription.getAuthorization();
+					if (authorization != null && authorization.getScope() != null) {
+						String scope = authorization.getScope();
+						if (scope.contains("privacy:")) {
+							// Extract privacy level from scope (e.g., "privacy:full" -> "full")
+							String privacyLevel = scope.substring(scope.indexOf("privacy:") + 8);
+							if (scope.contains("%20")) {
+								// Handle URL-encoded space
+								privacyLevel = privacyLevel.split("%20")[0];
+							}
+							
+							// Filter UsagePoints to only include the requested privacy variant
+							List<UsagePoint> filteredUsagePoints = new ArrayList<>();
+							
+							System.out.println("ExportServiceImpl: Filtering for privacy level: " + privacyLevel);
+							System.out.println("ExportServiceImpl: Total subscription UsagePoints: " + subscriptionUsagePoints.size());
+							
+							// Find the canonical UsagePoint (the one with privacy variant links)
+							UsagePoint canonicalUsagePoint = null;
+							for (UsagePoint up : subscriptionUsagePoints) {
+								List<LinkType> relatedLinks = up.getRelatedLinks();
+								boolean hasPrivacyLinks = false;
+								for (LinkType link : relatedLinks) {
+									if (link.getRel() != null && link.getRel().startsWith("privacy:")) {
+										hasPrivacyLinks = true;
+										break;
+									}
+								}
+								if (hasPrivacyLinks) {
+									canonicalUsagePoint = up;
+									System.out.println("ExportServiceImpl: Found canonical UsagePoint: " + up.getId());
+									break;
+								}
+							}
+							
+							if (canonicalUsagePoint != null) {
+								if ("full".equals(privacyLevel)) {
+									// For "full" privacy, return the canonical UsagePoint itself
+									filteredUsagePoints.add(canonicalUsagePoint);
+									System.out.println("ExportServiceImpl: Returning canonical UsagePoint for full privacy: " + canonicalUsagePoint.getId());
+								} else {
+									// For other privacy levels, find the specific variant
+									List<LinkType> relatedLinks = canonicalUsagePoint.getRelatedLinks();
+									System.out.println("ExportServiceImpl: Canonical UsagePoint has " + relatedLinks.size() + " related links");
+									for (LinkType link : relatedLinks) {
+										System.out.println("ExportServiceImpl: Link rel: " + link.getRel() + ", href: " + link.getHref());
+										if (("privacy:" + privacyLevel).equals(link.getRel())) {
+											String variantHref = link.getHref();
+											System.out.println("ExportServiceImpl: Found matching privacy link: " + variantHref);
+											if (variantHref != null && variantHref.contains("/UsagePoint/")) {
+												String uuidStr = variantHref.substring(variantHref.lastIndexOf("/") + 1);
+												System.out.println("ExportServiceImpl: Extracted UUID: " + uuidStr);
+												try {
+													UsagePoint variant = usagePointService.findByUUIDString(uuidStr);
+													if (variant != null) {
+														filteredUsagePoints.add(variant);
+														System.out.println("ExportServiceImpl: Added variant UsagePoint: " + variant.getId());
+													} else {
+														System.out.println("ExportServiceImpl: Variant UsagePoint not found");
+													}
+												} catch (Exception e) {
+													System.out.println("ExportServiceImpl: Exception finding UUID: " + e.getMessage());
+												}
+											}
+											break;
+										}
+									}
+								}
+							} else {
+								System.out.println("ExportServiceImpl: No canonical UsagePoint found");
+							}
+							
+							System.out.println("ExportServiceImpl: Filtered UsagePoints count: " + filteredUsagePoints.size());
+							
+							// If we found the variant, return only it; otherwise fall back to all UsagePoints
+							if (!filteredUsagePoints.isEmpty()) {
+								for (UsagePoint up : filteredUsagePoints) {
+									temp.add(up.getId());
+									System.out.println("ExportServiceImpl: Adding filtered UsagePoint ID: " + up.getId());
+								}
+							} else {
+								System.out.println("ExportServiceImpl: No variants found, returning all UsagePoints");
+								for (UsagePoint up : subscriptionUsagePoints) {
+									temp.add(up.getId());
+								}
 							}
 						} else {
+							// No privacy scope, return all UsagePoints
+							for (UsagePoint up : subscriptionUsagePoints) {
+								temp.add(up.getId());
+							}
+						}
+					} else {
+						// No authorization or scope, return all UsagePoints
+						for (UsagePoint up : subscriptionUsagePoints) {
+							temp.add(up.getId());
+						}
+					}
+				}
+			} else {
 							// otherwise, just get all the RetailCustomers
 							temp = resourceService
 									.findAllIdsByXPath(RetailCustomer.class);
@@ -1306,6 +1424,106 @@ public class ExportServiceImpl implements ExportService {
 			result = null;
 		}
 		return result;
+	}
+
+	/**
+	 * Filter UsagePoint IDs based on the privacy scope of the subscription's authorization.
+	 * Returns only the UsagePoint IDs that match the requested privacy level.
+	 */
+	private List<Long> filterUsagePointsByPrivacyScope(Long subscriptionId, List<Long> usagePointIds) {
+		if (subscriptionId == null || subscriptionId.equals(0L) || usagePointIds == null || usagePointIds.isEmpty()) {
+			return usagePointIds;
+		}
+		
+		try {
+			Subscription subscription = resourceService.findById(subscriptionId, Subscription.class);
+			if (subscription == null) {
+				return usagePointIds;
+			}
+			
+			Authorization authorization = subscription.getAuthorization();
+			if (authorization == null || authorization.getScope() == null) {
+				return usagePointIds;
+			}
+			
+			String scope = authorization.getScope();
+			if (!scope.contains("privacy:")) {
+				return usagePointIds;
+			}
+			
+			// Extract privacy level from scope (e.g., "privacy:full" -> "full")
+			String privacyLevel = scope.substring(scope.indexOf("privacy:") + 8);
+			if (scope.contains("%20")) {
+				// Handle URL-encoded space
+				privacyLevel = privacyLevel.split("%20")[0];
+			}
+			
+			System.out.println("ExportServiceImpl: Filtering for privacy level: " + privacyLevel + " in subscription " + subscriptionId);
+			
+			// Get the actual UsagePoint objects to check their links
+			List<UsagePoint> usagePoints = new ArrayList<>();
+			for (Long id : usagePointIds) {
+				UsagePoint up = resourceService.findById(id, UsagePoint.class);
+				if (up != null) {
+					usagePoints.add(up);
+				}
+			}
+			
+			// Find the canonical UsagePoint (the one with privacy variant links)
+			UsagePoint canonicalUsagePoint = null;
+			for (UsagePoint up : usagePoints) {
+				List<LinkType> relatedLinks = up.getRelatedLinks();
+				if (relatedLinks != null) {
+					for (LinkType link : relatedLinks) {
+						if (link.getRel() != null && link.getRel().startsWith("privacy:")) {
+							canonicalUsagePoint = up;
+							break;
+						}
+					}
+					if (canonicalUsagePoint != null) {
+						break;
+					}
+				}
+			}
+			
+			if (canonicalUsagePoint != null) {
+				if ("full".equals(privacyLevel)) {
+					// For "full" privacy, return the canonical UsagePoint itself
+					System.out.println("ExportServiceImpl: Returning canonical UsagePoint for full privacy: " + canonicalUsagePoint.getId());
+					return Arrays.asList(canonicalUsagePoint.getId());
+				} else {
+					// Find the specific privacy variant requested
+					List<LinkType> relatedLinks = canonicalUsagePoint.getRelatedLinks();
+					if (relatedLinks != null) {
+						for (LinkType link : relatedLinks) {
+							if (("privacy:" + privacyLevel).equals(link.getRel())) {
+								String variantHref = link.getHref();
+								if (variantHref != null && variantHref.contains("/UsagePoint/")) {
+									String uuidStr = variantHref.substring(variantHref.lastIndexOf("/") + 1);
+									try {
+										UsagePoint variant = usagePointService.findByUUIDString(uuidStr);
+										if (variant != null) {
+											System.out.println("ExportServiceImpl: Returning filtered UsagePoint ID: " + variant.getId());
+											return Arrays.asList(variant.getId());
+										}
+									} catch (Exception e) {
+										System.out.println("ExportServiceImpl: Exception finding UUID: " + e.getMessage());
+									}
+								}
+								break;
+							}
+						}
+					}
+				}
+			}
+			
+			System.out.println("ExportServiceImpl: No privacy variant found, returning all UsagePoint IDs");
+			return usagePointIds;
+			
+		} catch (Exception e) {
+			System.out.println("ExportServiceImpl: Exception in privacy filtering: " + e.getMessage());
+			return usagePointIds;
+		}
 	}
 
 }

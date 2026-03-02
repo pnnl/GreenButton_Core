@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -50,7 +51,7 @@ public class ImportServiceImpl implements ImportService {
 	private final Log logger = LogFactory.getLog(getClass());
 
 	@Autowired
-	@Qualifier("domainMarshaller")
+	@Qualifier("atomMarshaller")
 	private Jaxb2Marshaller jaxb2Marshaller;
 
 	@Autowired
@@ -101,6 +102,7 @@ public class ImportServiceImpl implements ImportService {
 	}
 
 	@Override
+	@Transactional
 	public void importData(InputStream stream, Long retailCustomerId)
 			throws IOException, SAXException, ParserConfigurationException {
 
@@ -120,6 +122,9 @@ public class ImportServiceImpl implements ImportService {
 		// do the parse/import
 
 		try {
+			if (logger.isInfoEnabled()) {
+				logger.info(String.format("[Import] Begin parse retailCustomerId=%s stream=%s", retailCustomerId, (stream == null ? "null" : "open")));
+			}
 			reader.parse(new InputSource(stream));
 
 		} catch (SAXException e) {
@@ -160,16 +165,26 @@ public class ImportServiceImpl implements ImportService {
 
 		if (retailCustomerId != null) {
 			retailCustomer = retailCustomerService.findById(retailCustomerId);
+			if (logger.isInfoEnabled()) {
+				logger.info("[Import] Loaded RetailCustomer id=" + (retailCustomer == null ? "null" : retailCustomer.getId()));
+			}
 		}
 
 		Iterator<EntryType> its = entries.iterator();
+		int upCount = 0;
 
 		while (its.hasNext()) {
 			EntryType entry = its.next();
 			UsagePoint usagePoint = entry.getContent().getUsagePoint();
 			if (usagePoint != null) {
+				upCount++;
 
 				// see if we already have a retail customer association
+				if (logger.isInfoEnabled()) {
+					logger.info(String.format("[Import] Post-parse UP[%d] id=%s uuid=%s rc=%s", upCount,
+							usagePoint.getId(), usagePoint.getUUID(),
+							(usagePoint.getRetailCustomer() == null ? "null" : usagePoint.getRetailCustomer().getId())));
+				}
 
 				RetailCustomer tempRc = usagePoint.getRetailCustomer();
 				if (tempRc != null) {
@@ -186,12 +201,32 @@ public class ImportServiceImpl implements ImportService {
 				} else {
 					// associate the usagePoint with the Retail Customer
 					if (retailCustomer != null) {
-						usagePointService.associateByUUID(retailCustomer,
-								usagePoint.getUUID());
+						// If the UsagePoint was already persisted earlier in this import
+						// (via EntryProcessor -> resourceService.merge with REQUIRES_NEW),
+						// it will have a database ID. In that case, directly attach the
+						// RetailCustomer and merge the managed instance to avoid a second
+						// insert caused by REPEATABLE READ isolation not seeing the inner tx.
+						if (usagePoint.getId() != null) {
+							usagePoint.setRetailCustomer(retailCustomer);
+							resourceService.merge(usagePoint);
+						} else {
+							// Fallback: associate by UUID (will create if truly new)
+							if (logger.isInfoEnabled()) {
+								logger.info("[Import] Calling associateByUUID for uuid=" + usagePoint.getUUID());
+							}
+							usagePointService.associateByUUID(retailCustomer, usagePoint.getUUID());
+							if (logger.isInfoEnabled()) {
+								logger.info("[Import] associateByUUID returned for uuid=" + usagePoint.getUUID());
+							}
+						}
 					}
 				}
 				usagePointList.add(usagePoint);
 			}
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("[Import] Completed association loop; usagePointList size=" + usagePointList.size());
 		}
 
 		// now if we have a retail customer, check for any subscriptions that
@@ -243,7 +278,6 @@ public class ImportServiceImpl implements ImportService {
 							if (up.equals(usagePoint))
 								addNew = true;
 						}
-
 						if (addNew)
 							subscriptionService.addUsagePoint(subscription,
 									usagePoint);
@@ -251,6 +285,10 @@ public class ImportServiceImpl implements ImportService {
 					}
 				}
 			}
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("[Import] importData complete");
 		}
 	}
 

@@ -22,7 +22,7 @@
 SET sql_mode = 'PIPES_AS_CONCAT';
 
 SET @dcbaseurl = 'http://localhost:8080';
-SET @tpbaseurl = 'http://localhost:8080';
+SET @tpbaseurl = 'http://localhost:9090';
 
 USE thirdparty;
 

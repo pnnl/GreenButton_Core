@@ -1,62 +1,32 @@
 #!/usr/bin/env bash
-#
-#
-#    Copyright (c) 2018-2021 Green Button Alliance, Inc.
-#
-#    Portions (c) 2013-2018 EnergyOS.org
-#
-#     Licensed under the Apache License, Version 2.0 (the "License");
-#     you may not use this file except in compliance with the License.
-#     You may obtain a copy of the License at
-#
-#         http://www.apache.org/licenses/LICENSE-2.0
-#
-#     Unless required by applicable law or agreed to in writing, software
-#     distributed under the License is distributed on an "AS IS" BASIS,
-#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#     See the License for the specific language governing permissions and
-#     limitations under the License.
-#
-#
+set -euo pipefail
 
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_01.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_01.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_02.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_02.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_03.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_03.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_04.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_04.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_05.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_05.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_06.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_06.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_07.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_07.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_08.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_08.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_09.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_09.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_10.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_10.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_11.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_11.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_12.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_12.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_13.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_13.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
-read -p "Press any key to continue... " -n1 -s
-echo 'curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_14.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint'
-time curl  --header "Content-Type:application/xml" -X POST -d @test_usage_data_14.xml http://localhost:8080/DataCustodian/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint
+# ─── CONFIG ───────────────────────────────────────────────────────────────
+BASE_URL="http://localhost:8080/DataCustodian"
+TOKEN_URL="$BASE_URL/oauth/token"
+BATCH_URL="$BASE_URL/espi/1_1/resource/Batch/RetailCustomer/1/UsagePoint"
+
+CLIENT_ID="data_custodian"
+CLIENT_SECRET="secret"
+
+BATCH_PAYLOAD="batch_payload.xml"
+
+# ─── STEP 2: FETCH OAUTH TOKEN ────────────────────────────────────────────
+echo "Fetching OAuth token…"
+TOKEN_JSON=$(curl -s -u "data_custodian:secret" \
+  -d 'grant_type=client_credentials' \
+  "http://localhost:8080/DataCustodian/oauth/token")
+
+TOKEN=$(printf "%s" "$TOKEN_JSON" | python3 -c 'import sys, json; print(json.load(sys.stdin)["access_token"])')
+echo "Got token: ${TOKEN:0:8}…"
+
+# ─── STEP 3: UPLOAD BATCH ─────────────────────────────────────────────────
+echo "Uploading batch payload…"
+curl -v \
+  -X POST \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/xml; charset=UTF-8" \
+  --data-binary @"$BATCH_PAYLOAD" \
+  "$BATCH_URL"
+
+echo "Done."

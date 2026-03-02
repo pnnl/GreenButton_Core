@@ -37,5 +37,6 @@ mysql --user=root --password=password < datacustodianmysql.sql
 mysql --user=root --password=password < tokenstore.sql
 
 # prepopulate tables 
+# Ensure demo users are inserted deterministically (alan id=1)
 mysql --user=root --password=password < prepopulatesql_dc.sql
 mysql --user=root --password=password < prepopulatesql_tp.sql

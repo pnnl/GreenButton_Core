@@ -20,7 +20,7 @@
 
 SET FOREIGN_KEY_CHECKS=0;
 
-USE datacustodian
+USE datacustodian;
 TRUNCATE TABLE authorizations;
 TRUNCATE TABLE BatchList;
 TRUNCATE TABLE electric_power_quality_summaries;
@@ -44,7 +44,7 @@ TRUNCATE TABLE application_information_scopes;
 TRUNCATE TABLE application_information;
 
 
-USE tokenstore
+USE tokenstore;
 TRUNCATE TABLE oauth_client_details;
 TRUNCATE TABLE oauth_client_token;
 TRUNCATE TABLE oauth_access_token;

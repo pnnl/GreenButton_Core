@@ -42,6 +42,8 @@ public interface ResourceRepository {
 
 	UsagePoint findByUUID(UUID uuid);
 
+	UsagePoint findByUUIDString(String uuidString);
+
 	@Transactional(rollbackFor = { javax.xml.bind.JAXBException.class }, noRollbackFor = {
 			javax.persistence.NoResultException.class,
 			org.springframework.dao.EmptyResultDataAccessException.class })

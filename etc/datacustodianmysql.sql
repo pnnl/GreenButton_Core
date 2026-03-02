@@ -567,7 +567,7 @@ CREATE TABLE `usage_summaries` (
   `billToDate` bigint(20) DEFAULT NULL,
   `billingPeriod_duration` bigint(20) DEFAULT NULL,
   `billingPeriod_start` bigint(20) DEFAULT NULL,
-  `costAdditionalDetailLastPeriod` bigint(20) DEFAULT NULL,
+  `costAdditionalLastPeriod` bigint(20) DEFAULT NULL,
   `currency` varchar(255) DEFAULT NULL,
   `currentBillingPeriodOverAllConsumption_powerOfTenMultiplier` varchar(255) DEFAULT NULL,
   `currentBillingPeriodOverAllConsumption_timeStamp` bigint(20) DEFAULT NULL,
@@ -616,7 +616,7 @@ CREATE TABLE `usage_summaries` (
   `usage_point_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid_UNIQUE` (`uuid`),
-  KEY `fk_usage_summaries_1` (`usage_point_id`),
+  KEY `fk_usage_summaries_1_idx` (`usage_point_id`),
   CONSTRAINT `fk_usage_summaries_1` FOREIGN KEY (`usage_point_id`) REFERENCES `usage_points` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;

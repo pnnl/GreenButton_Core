@@ -21,10 +21,28 @@
 /* Add application_information */
 SET sql_mode = 'PIPES_AS_CONCAT';
 
-SET @dcbaseurl = 'http://localhost:8080';
-SET @tpbaseurl = 'http://localhost:9090';
+SET @dcbaseurl = 'http://10.15.105.52:80';
+SET @tpbaseurl = 'http://10.15.105.52:443';
 
 USE datacustodian;
+
+-- Seed retail customers deterministically so 'alan' is id=1 (legacy datasets assume this)
+-- This block is safe on empty tables and no-ops if rows already exist
+INSERT INTO retail_customers (
+	id, description, published, self_link_href, self_link_rel, up_link_href, up_link_rel,
+	updated, uuid, enabled, username, first_name, last_name, password, role
+)
+SELECT 1, '', NOW(), '/espi/1_1/resource/RetailCustomer/1','self','/espi/1_1/resource/RetailCustomer','up',
+			 NOW(),'USER-ALAN', b'1','alan','Alan','Turing','password','ROLE_USER'
+WHERE NOT EXISTS (SELECT 1 FROM retail_customers WHERE id = 1 OR username = 'alan');
+
+INSERT INTO retail_customers (
+	id, description, published, self_link_href, self_link_rel, up_link_href, up_link_rel,
+	updated, uuid, enabled, username, first_name, last_name, password, role
+)
+SELECT 2, '', NOW(), '/espi/1_1/resource/RetailCustomer/2','self','/espi/1_1/resource/RetailCustomer','up',
+			 NOW(),'USER-GRACE', b'1','grace','Grace','Hopper','koala','ROLE_CUSTODIAN'
+WHERE NOT EXISTS (SELECT 1 FROM retail_customers WHERE id = 2 OR username = 'grace');
 
 INSERT INTO `application_information` (`id`, `kind`, `description`, `published`, `self_link_href`, `self_link_rel`, `up_link_href`, `up_link_rel`, `updated`, `uuid`, `authorizationServerAuthorizationEndpoint`, `authorizationServerRegistrationEndpoint`, `authorizationServerTokenEndpoint`, `authorizationServerUri`, `clientId`, `clientIdIssuedAt`, `clientName`, `clientSecret`, `clientSecretExpiresAt`, `clientUri`, `contacts`, `dataCustodianApplicationStatus`, `dataCustodianBulkRequestURI`, `dataCustodianDefaultBatchResource`, `dataCustodianDefaultSubscriptionResource`, `dataCustodianId`, `dataCustodianResourceEndpoint`, `dataCustodianThirdPartySelectionScreenURI`, `logoUri`, `policyUri`, `redirectUri`, `registrationAccessToken`, `registrationClientUri`, `responseTypes`, `softwareId`, `softwareVersion`, `thirdPartyApplicationDescription`, `thirdPartyApplicationName`, `thirdPartyApplicationStatus`, `thirdPartyApplicationType`, `thirdPartyApplicationUse`, `thirdPartyDataCustodianSelectionScreenURI`, `thirdPartyLoginScreenURI`, `thirdPartyNotifyUri`, `thirdPartyPhone`, `thirdPartyScopeSelectionScreenURI`, `thirdPartyUserPortalScreenURI`, `tokenEndpointAuthMethod`, `tosUri`, `dataCustodianScopeSelectionScreenURI`) VALUES
 (1, 'DATA_CUSTODIAN_ADMIN', 'Green Button Alliance OpenESPI Data Custodian Admin Application', '2014-01-02 05:00:00', '/espi/1_1/resource/DataCustodian/ApplicationInformation/1', 'self', '/espi/1_1/resource/DataCustodian/ApplicationInformation', 'up', '2014-01-02 05:00:00', '185C9C3F-5B4A-44A9-8959-3AE79E60A9F5', @dcbaseurl || '/DataCustodian/oauth/authorize', @dcbaseurl || '/DataCustodian/espi/1_1/register', @dcbaseurl || '/DataCustodian/oauth/token', @dcbaseurl || '/DataCustodian/', 'data_custodian', 1403190000, 'Green Button DataCustodian Admin', 'secret', 0, @dcbaseurl || '/DataCustodian','john.teeter@energyos.org,martin.burns@nist.gov,donald.coffin@reminetworks.com', '1', @dcbaseurl || '/DataCustodian/espi/1_1/resource/Batch/Bulk', @dcbaseurl || '/DataCustodian/espi/1_1/resource/Batch', @dcbaseurl || '/DataCustodian/espi/1_1/resource/Batch/Subscription', 'data_custodian', @dcbaseurl || '/DataCustodian/espi/1_1/resource', @dcbaseurl || '/DataCustodian/RetailCustomer/{retailCustomerId}/ThirdPartyList', NULL, NULL, NULL, NULL, @dcbaseurl || '/DataCustodian/espi/1_1/resource/ApplicationInformation/1', 0, 'EnergyOS OpenESPI', '1.2', 'EnergyOS OpenESPI Example DataCustodian Admin', 'Data Custodian Admin (localhost)', '1', '1', '1', NULL, NULL, NULL, NULL, NULL, NULL, 'client_secret_basic', NULL, @dcbaseurl || '/DataCustodian/RetailCustomer/ScopeSelection/'),

@@ -1,0 +1,8 @@
+digraph privacy_variants {
+  rankdir=LR;
+  node [shape=box, fontname=Helvetica];
+  label="Privacy Variant Graph (data): datacustodian";
+  labelloc=top;
+  fontsize=20;
+
+}

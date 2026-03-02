@@ -1,0 +1,44 @@
+digraph datacustodian_schema {
+  rankdir=LR;
+  node [shape=box, fontname=Helvetica];
+  label="Schema FK Graph: datacustodian";
+  labelloc=top;
+  fontsize=20;
+
+  "application_information";
+  "electric_power_quality_summaries";
+  "electric_power_usage_summaries";
+  "interval_blocks";
+  "interval_readings";
+  "meter_reading_related_links";
+  "meter_readings";
+  "reading_types";
+  "reading_types_meter_readings";
+  "retail_customers";
+  "service_delivery_points";
+  "subscriptions";
+  "subscriptions_usage_points";
+  "time_configurations";
+  "usage_point_related_links";
+  "usage_points";
+  "usage_summaries";
+
+  "electric_power_quality_summaries" -> "usage_points" [label="usage_point_id→id"];
+  "electric_power_usage_summaries" -> "usage_points" [label="usage_point_id→id"];
+  "interval_blocks" -> "meter_readings" [label="meter_reading_id→id"];
+  "interval_readings" -> "interval_blocks" [label="interval_block_id→id"];
+  "meter_reading_related_links" -> "meter_readings" [label="meter_reading_id→id"];
+  "meter_readings" -> "reading_types" [label="reading_type_id→id"];
+  "meter_readings" -> "usage_points" [label="usage_point_id→id"];
+  "reading_types_meter_readings" -> "meter_readings" [label="meterReadings_id→id"];
+  "reading_types_meter_readings" -> "reading_types" [label="reading_types_id→id"];
+  "subscriptions" -> "application_information" [label="applicationInformation_id→id"];
+  "subscriptions" -> "retail_customers" [label="retail_customer_id→id"];
+  "subscriptions_usage_points" -> "subscriptions" [label="subscriptions_id→id"];
+  "usage_point_related_links" -> "usage_points" [label="usage_point_id→id"];
+  "usage_points" -> "time_configurations" [label="localTimeParameters_id→id"];
+  "usage_points" -> "retail_customers" [label="retail_customer_id→id"];
+  "usage_points" -> "service_delivery_points" [label="serviceDeliveryPoint_id→id"];
+  "usage_points" -> "subscriptions" [label="subscription_id→id"];
+  "usage_summaries" -> "usage_points" [label="usage_point_id→id"];
+}

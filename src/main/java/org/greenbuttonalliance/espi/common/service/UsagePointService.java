@@ -43,6 +43,8 @@ public interface UsagePointService {
 
 	UsagePoint findByUUID(UUID uuid);
 
+	UsagePoint findByUUIDString(String uuidString);
+
 	UsagePoint findByHashedId(String usagePointHashedId);
 
 	List<UsagePoint> findAllUpdatedFor(Subscription subscription);

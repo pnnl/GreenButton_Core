@@ -196,6 +196,10 @@ public class Authorization extends IdentifiedObject {
 	@XmlSchemaType(name = "anyURI")
 	protected String errorUri;
 
+	@Column(name = "privacy_level")
+	@XmlTransient
+	protected String privacyLevel;
+
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "application_information_id")
 	@XmlTransient
@@ -336,7 +340,9 @@ public class Authorization extends IdentifiedObject {
 	public void setGrantType(GrantType value) {
 		this.grantType = value;
 	}
-
+	public void setUuid(String uuid) {
+    	this.uuid = uuid;
+	}
 	/**
 	 * Sets the value of the grantType property.
 	 *
@@ -609,6 +615,14 @@ public class Authorization extends IdentifiedObject {
 		this.thirdParty = thirdParty;
 	}
 
+	public String getPrivacyLevel() {
+		return privacyLevel;
+	}
+
+	public void setPrivacyLevel(String privacyLevel) {
+		this.privacyLevel = privacyLevel;
+	}
+
 	public RetailCustomer getRetailCustomer() {
 		return retailCustomer;
 	}
@@ -663,6 +677,7 @@ public class Authorization extends IdentifiedObject {
 		this.subscribable = ((Authorization) resource).subscribable;
 		this.thirdParty = ((Authorization) resource).getThirdParty();
 		this.tokenType = ((Authorization) resource).getTokenType();
+		this.privacyLevel = ((Authorization) resource).getPrivacyLevel();
 	}
 
 }

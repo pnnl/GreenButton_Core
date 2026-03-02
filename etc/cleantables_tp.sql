@@ -20,7 +20,7 @@
 
 SET FOREIGN_KEY_CHECKS=0;
 
-USE thirdparty
+USE thirdparty;
 TRUNCATE TABLE authorizations;
 TRUNCATE TABLE BatchList;
 TRUNCATE TABLE electric_power_quality_summaries;

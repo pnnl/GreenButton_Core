@@ -1,0 +1,77 @@
+flowchart LR
+  %% Privacy selection -> exported data
+  %% NOTE: This file is written to be strict Mermaid-parser-friendly.
+
+  %% Styling
+  classDef be fill:#0f172a,stroke:#a78bfa,color:#e6edf3,stroke-width:2px;
+  classDef api fill:#111827,stroke:#22c55e,color:#e6edf3,stroke-width:2px;
+  classDef db fill:#111827,stroke:#f59e0b,color:#e6edf3,stroke-width:2px;
+  classDef canonical fill:#1f6feb,stroke:#0b3d91,color:#ffffff,stroke-width:2px;
+  classDef p_full fill:#16a34a,stroke:#14532d,color:#ffffff,stroke-width:2px;
+  classDef p_high fill:#0ea5e9,stroke:#075985,color:#ffffff,stroke-width:2px;
+  classDef p_medium fill:#f59e0b,stroke:#78350f,color:#111827,stroke-width:2px;
+  classDef p_low fill:#ef4444,stroke:#7f1d1d,color:#ffffff,stroke-width:2px;
+  classDef note fill:#0b1020,stroke:#334155,color:#e6edf3,stroke-width:1px;
+
+  subgraph CONSENT["Consent captures privacy intent"]
+    C1["Stars FE /confirmation: user selects privacy_level"]
+    C2["DC /api/auth/consent: adds privacy scope"]
+    C3["Authorization.scope includes privacy:LEVEL"]
+    C1 --> C2 --> C3
+  end
+
+  subgraph DCDB["DataCustodian DB"]
+    UP0[(usage_points)]
+    UPL[(usage_point_related_links)]
+  end
+
+  subgraph VARIANTS["Privacy variant structure (stored data)"]
+    CAN["Canonical UsagePoint (uuid = U)"]
+    FULL["Variant (uuid = U-full)"]
+    HIGH["Variant (uuid = U-high)"]
+    MED["Variant (uuid = U-medium)"]
+    LOW["Variant (uuid = U-low)"]
+
+    CAN -->|"rel=privacy:full"| FULL
+    CAN -->|"rel=privacy:high"| HIGH
+    CAN -->|"rel=privacy:medium"| MED
+    CAN -->|"rel=privacy:low"| LOW
+
+    FULL -.->|"rel=canonical"| CAN
+    HIGH -.->|"rel=canonical"| CAN
+    MED -.->|"rel=canonical"| CAN
+    LOW -.->|"rel=canonical"| CAN
+  end
+
+  subgraph EXPORT["Export-time selection (runtime)"]
+    E1["ThirdParty calls DC resourceURI (GET subscription feed)"]
+    E2["DC ExportServiceImpl.filterUsagePointsByPrivacyScope()"]
+    E3{privacy level}
+    E4["If full: return canonical UsagePoint ID"]
+    E5["Else: follow canonical related link privacy:LEVEL -> UUID -> variant UsagePoint ID"]
+    E6["Export only the selected UsagePoint (and its MeterReadings/IntervalBlocks)"]
+
+    E1 --> E2 --> E3
+    E3 -->|"privacy:full"| E4 --> E6
+    E3 -->|"privacy:high/medium/low"| E5 --> E6
+  end
+
+  %% Class assignments
+  class C1,E1 be;
+  class C2,E2,E5,E6 api;
+  class C3,UP0,UPL db;
+  class CAN,E4 canonical;
+  class FULL p_full;
+  class HIGH p_high;
+  class MED p_medium;
+  class LOW p_low;
+
+  %% Data dependencies
+  C3 -.-> E2
+  UP0 -.-> VARIANTS
+  UPL -.-> VARIANTS
+  VARIANTS -.-> E5
+
+  N1["Variants come from DC PrivacyVariantServiceImpl (SQL or fallback cloning)"]
+  class N1 note;
+  VARIANTS -.-> N1

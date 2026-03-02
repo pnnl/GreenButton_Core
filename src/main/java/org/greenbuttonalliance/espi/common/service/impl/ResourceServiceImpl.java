@@ -27,6 +27,7 @@ import org.greenbuttonalliance.espi.common.service.ResourceService;
 import org.greenbuttonalliance.espi.common.utils.EntryTypeIterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class ResourceServiceImpl implements ResourceService {
 	@Autowired
 	private ResourceRepository repository;
 
+	
 	/**
 	 * A private Map of Key:Value strings to hold the dynamic configuration.
 	 * 
@@ -50,6 +52,7 @@ public class ResourceServiceImpl implements ResourceService {
 	private Map<String, String> params;
 
 	@Override
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void persist(IdentifiedObject resource) {
 		repository.persist(resource);
 	}
@@ -154,6 +157,25 @@ public class ResourceServiceImpl implements ResourceService {
 	@Override
 	public <T> T findByUUID(UUID uuid, Class<T> clazz) {
 		return repository.findByUUID(uuid, clazz);
+	}
+
+	@Override
+	public UsagePoint findByUUIDString(String uuidString) {
+		return repository.findByUUIDString(uuidString);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public MeterReading findMeterReadingWithIntervalBlocks(Long meterReadingId) {
+		MeterReading meterReading = findById(meterReadingId, MeterReading.class);
+		if (meterReading != null && meterReading.getIntervalBlocks() != null) {
+			// Force loading of interval blocks by iterating through them
+			for (IntervalBlock block : meterReading.getIntervalBlocks()) {
+				// This forces Hibernate to load the interval block data
+				block.getId();
+			}
+		}
+		return meterReading;
 	}
 
 	@Override
@@ -311,10 +333,10 @@ public class ResourceServiceImpl implements ResourceService {
 
 	}
 
+		@Override
 	@Transactional
-	@Override
-	public <T extends IdentifiedObject> T merge(IdentifiedObject resource) {
-		return repository.merge(resource);
+	public <T extends IdentifiedObject> T merge(IdentifiedObject existingResource) {
+		return repository.merge(existingResource);
 
 	}
 

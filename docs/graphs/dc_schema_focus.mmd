@@ -1,0 +1,59 @@
+flowchart LR
+  %% Schema FK Graph: datacustodian
+  %% Styling
+  classDef core fill:#1f6feb,stroke:#0b3d91,color:#ffffff,stroke-width:2px;
+  classDef link fill:#7c3aed,stroke:#4c1d95,color:#ffffff,stroke-width:2px;
+  classDef dim fill:#111827,stroke:#334155,color:#e5e7eb,stroke-width:1px;
+
+  t_application_information[application_information]
+  t_electric_power_quality_summaries[electric_power_quality_summaries]
+  t_electric_power_usage_summaries[electric_power_usage_summaries]
+  t_interval_blocks[interval_blocks]
+  t_interval_readings[interval_readings]
+  t_meter_reading_related_links[meter_reading_related_links]
+  t_meter_readings[meter_readings]
+  t_reading_types[reading_types]
+  t_reading_types_meter_readings[reading_types_meter_readings]
+  t_retail_customers[retail_customers]
+  t_service_delivery_points[service_delivery_points]
+  t_subscriptions[subscriptions]
+  t_subscriptions_usage_points[subscriptions_usage_points]
+  t_time_configurations[time_configurations]
+  t_usage_point_related_links[usage_point_related_links]
+  t_usage_points[usage_points]
+  t_usage_summaries[usage_summaries]
+  class t_application_information dim;
+  class t_electric_power_quality_summaries dim;
+  class t_electric_power_usage_summaries dim;
+  class t_interval_blocks dim;
+  class t_interval_readings dim;
+  class t_meter_reading_related_links link;
+  class t_meter_readings core;
+  class t_reading_types dim;
+  class t_reading_types_meter_readings link;
+  class t_retail_customers core;
+  class t_service_delivery_points dim;
+  class t_subscriptions core;
+  class t_subscriptions_usage_points link;
+  class t_time_configurations dim;
+  class t_usage_point_related_links link;
+  class t_usage_points core;
+  class t_usage_summaries dim;
+  t_electric_power_quality_summaries -- "usage_point_id→id" --> t_usage_points
+  t_electric_power_usage_summaries -- "usage_point_id→id" --> t_usage_points
+  t_interval_blocks -- "meter_reading_id→id" --> t_meter_readings
+  t_interval_readings -- "interval_block_id→id" --> t_interval_blocks
+  t_meter_reading_related_links -- "meter_reading_id→id" --> t_meter_readings
+  t_meter_readings -- "reading_type_id→id" --> t_reading_types
+  t_meter_readings -- "usage_point_id→id" --> t_usage_points
+  t_reading_types_meter_readings -- "meterReadings_id→id" --> t_meter_readings
+  t_reading_types_meter_readings -- "reading_types_id→id" --> t_reading_types
+  t_subscriptions -- "applicationInformation_id→id" --> t_application_information
+  t_subscriptions -- "retail_customer_id→id" --> t_retail_customers
+  t_subscriptions_usage_points -- "subscriptions_id→id" --> t_subscriptions
+  t_usage_point_related_links -- "usage_point_id→id" --> t_usage_points
+  t_usage_points -- "localTimeParameters_id→id" --> t_time_configurations
+  t_usage_points -- "retail_customer_id→id" --> t_retail_customers
+  t_usage_points -- "serviceDeliveryPoint_id→id" --> t_service_delivery_points
+  t_usage_points -- "subscription_id→id" --> t_subscriptions
+  t_usage_summaries -- "usage_point_id→id" --> t_usage_points
