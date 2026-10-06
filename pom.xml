@@ -119,7 +119,7 @@
         -->
 		 
 	  	<jackson1.version>1.9.13</jackson1.version>
-	    <jackson2.version>2.8.11</jackson2.version>
+	    <jackson2.version>2.18.11</jackson2.version>
 	    
         <!-- Hibernate / JPA -->
         <hibernate.version>5.2.18.Final</hibernate.version>
